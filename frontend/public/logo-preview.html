@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>DSOS logo preview</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      html, body { margin: 0; padding: 0; background: #050203; color: #f4ead4; font-family: system-ui, sans-serif; min-height: 100%; }
+      .row { display: flex; gap: 16px; flex-wrap: wrap; padding: 24px; align-items: flex-start; }
+      .tile { background: #0a0506; border: 1px solid rgba(255,138,42,0.2); border-radius: 8px; padding: 12px; }
+      .tile h2 { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; margin: 0 0 8px 0; }
+      svg { display: block; }
+      .mark-bg { background: #120709; padding: 18px; border-radius: 8px; }
+    </style>
+  </head>
+  <body>
+    <div class="row">
+      <!-- DARK LOGO -->
+      <div class="tile">
+        <h2>Logo · dark · 360</h2>
+        <svg viewBox="0 0 400 300" width="360" style="filter: drop-shadow(0 0 28px rgba(255,80,20,0.55))">
+          <defs>
+            <radialGradient id="sky" cx="50%" cy="100%" r="95%">
+              <stop offset="0%" stop-color="#3a0608"/>
+              <stop offset="50%" stop-color="#1a0608"/>
+              <stop offset="100%" stop-color="#050203"/>
+            </radialGradient>
+            <linearGradient id="cuspFill" x1="50%" y1="0%" x2="50%" y2="100%">
+              <stop offset="0%" stop-color="#fff7d8"/>
+              <stop offset="35%" stop-color="#ffd998"/>
+              <stop offset="70%" stop-color="#ff5a1a"/>
+              <stop offset="100%" stop-color="#7a0a0a"/>
+            </linearGradient>
+            <filter id="bloom" x="-50%" y="-30%" width="200%" height="160%" filterUnits="objectBoundingBox">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b"/>
+              <feFlood flood-color="#ff3a1a" flood-opacity="0.6"/>
+              <feComposite in2="b" operator="in" result="g"/>
+              <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <rect width="400" height="300" fill="url(#sky)"/>
+          <ellipse cx="80" cy="240" rx="90" ry="120" fill="#ff3a1a" opacity="0.22"/>
+          <ellipse cx="320" cy="240" rx="90" ry="120" fill="#ff3a1a" opacity="0.22"/>
+          <ellipse cx="80" cy="240" rx="50" ry="70" fill="#ffb86a" opacity="0.18"/>
+          <ellipse cx="320" cy="240" rx="50" ry="70" fill="#ffb86a" opacity="0.18"/>
+          <g filter="url(#bloom)">
+            <path d="M 130 25 C 105 70, 35 200, 48 280 L 113 280 C 90 200, 125 105, 130 25 Z" fill="url(#cuspFill)"/>
+            <path d="M 270 25 C 295 70, 365 200, 352 280 L 287 280 C 310 200, 275 105, 270 25 Z" fill="url(#cuspFill)"/>
+          </g>
+          <path d="M 130 25 C 105 70, 35 200, 48 280" fill="none" stroke="#fff7d8" stroke-width="1.4" opacity="0.9"/>
+          <path d="M 270 25 C 295 70, 365 200, 352 280" fill="none" stroke="#fff7d8" stroke-width="1.4" opacity="0.9"/>
+          <path d="M 0 248 L 40 244 L 90 250 L 130 240 L 170 250 L 200 244 L 230 250 L 270 240 L 310 250 L 360 244 L 400 248 L 400 300 L 0 300 Z" fill="#020102"/>
+          <g fill="#020102">
+            <path d="M 50 248 q -3 -9 -5 -1 q -3 -7 -5 0 q -2 -5 -4 0 q -3 -8 -5 0 q -2 -6 -4 0 q -3 -7 -5 0 z"/>
+            <path d="M 75 248 q -3 -10 -6 -2 q -3 -8 -6 0 q -3 -6 -5 0 q -3 -9 -6 0 z"/>
+            <path d="M 350 248 q 3 -9 5 -1 q 3 -7 5 0 q 2 -5 4 0 q 3 -8 5 0 q 2 -6 4 0 q 3 -7 5 0 z"/>
+            <path d="M 325 248 q 3 -10 6 -2 q 3 -8 6 0 q 3 -6 5 0 q 3 -9 6 0 z"/>
+          </g>
+          <text x="200" y="120" text-anchor="middle" font-family="Dancing Script, cursive" font-weight="700" font-size="56" fill="#ffd28a">DSOS</text>
+          <text x="200" y="160" text-anchor="middle" font-family="Dancing Script, cursive" font-weight="700" font-size="20" fill="#f4ead4">devil&#39;s sunrise</text>
+        </svg>
+      </div>
+
+      <!-- DARK, no wordmark -->
+      <div class="tile">
+        <h2>Logo · dark · 360 · no wordmark</h2>
+        <svg viewBox="0 0 400 300" width="360" style="filter: drop-shadow(0 0 28px rgba(255,80,20,0.55))">
+          <defs>
+            <radialGradient id="sky2" cx="50%" cy="100%" r="95%">
+              <stop offset="0%" stop-color="#3a0608"/>
+              <stop offset="50%" stop-color="#1a0608"/>
+              <stop offset="100%" stop-color="#050203"/>
+            </radialGradient>
+            <linearGradient id="cuspFill2" x1="50%" y1="0%" x2="50%" y2="100%">
+              <stop offset="0%" stop-color="#fff7d8"/>
+              <stop offset="35%" stop-color="#ffd998"/>
+              <stop offset="70%" stop-color="#ff5a1a"/>
+              <stop offset="100%" stop-color="#7a0a0a"/>
+            </linearGradient>
+            <filter id="bloom2" x="-50%" y="-30%" width="200%" height="160%" filterUnits="objectBoundingBox">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b"/>
+              <feFlood flood-color="#ff3a1a" flood-opacity="0.6"/>
+              <feComposite in2="b" operator="in" result="g"/>
+              <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <rect width="400" height="300" fill="url(#sky2)"/>
+          <ellipse cx="80" cy="240" rx="90" ry="120" fill="#ff3a1a" opacity="0.22"/>
+          <ellipse cx="320" cy="240" rx="90" ry="120" fill="#ff3a1a" opacity="0.22"/>
+          <ellipse cx="80" cy="240" rx="50" ry="70" fill="#ffb86a" opacity="0.18"/>
+          <ellipse cx="320" cy="240" rx="50" ry="70" fill="#ffb86a" opacity="0.18"/>
+          <g filter="url(#bloom2)">
+            <path d="M 130 25 C 105 70, 35 200, 48 280 L 113 280 C 90 200, 125 105, 130 25 Z" fill="url(#cuspFill2)"/>
+            <path d="M 270 25 C 295 70, 365 200, 352 280 L 287 280 C 310 200, 275 105, 270 25 Z" fill="url(#cuspFill2)"/>
+          </g>
+          <path d="M 130 25 C 105 70, 35 200, 48 280" fill="none" stroke="#fff7d8" stroke-width="1.4" opacity="0.9"/>
+          <path d="M 270 25 C 295 70, 365 200, 352 280" fill="none" stroke="#fff7d8" stroke-width="1.4" opacity="0.9"/>
+          <path d="M 0 248 L 40 244 L 90 250 L 130 240 L 170 250 L 200 244 L 230 250 L 270 240 L 310 250 L 360 244 L 400 248 L 400 300 L 0 300 Z" fill="#020102"/>
+          <g fill="#020102">
+            <path d="M 50 248 q -3 -9 -5 -1 q -3 -7 -5 0 q -2 -5 -4 0 q -3 -8 -5 0 q -2 -6 -4 0 q -3 -7 -5 0 z"/>
+            <path d="M 75 248 q -3 -10 -6 -2 q -3 -8 -6 0 q -3 -6 -5 0 q -3 -9 -6 0 z"/>
+            <path d="M 350 248 q 3 -9 5 -1 q 3 -7 5 0 q 2 -5 4 0 q 3 -8 5 0 q 2 -6 4 0 q 3 -7 5 0 z"/>
+            <path d="M 325 248 q 3 -10 6 -2 q 3 -8 6 0 q 3 -6 5 0 q 3 -9 6 0 z"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- LIGHT (contrast-inverted) variant -->
+      <div class="tile" style="background:#e6e2dd">
+        <h2 style="color:#0a0506;opacity:0.6">Logo · light · 360 · (matches your contrast image)</h2>
+        <svg viewBox="0 0 400 300" width="360">
+          <defs>
+            <radialGradient id="sky3" cx="50%" cy="100%" r="95%">
+              <stop offset="0%" stop-color="#c8c4be"/>
+              <stop offset="50%" stop-color="#d8d4cf"/>
+              <stop offset="100%" stop-color="#e6e2dd"/>
+            </radialGradient>
+          </defs>
+          <rect width="400" height="300" fill="url(#sky3)"/>
+          <path d="M 130 25 C 105 70, 35 200, 48 280 L 113 280 C 90 200, 125 105, 130 25 Z" fill="#0a0506"/>
+          <path d="M 270 25 C 295 70, 365 200, 352 280 L 287 280 C 310 200, 275 105, 270 25 Z" fill="#0a0506"/>
+          <path d="M 0 248 L 40 244 L 90 250 L 130 240 L 170 250 L 200 244 L 230 250 L 270 240 L 310 250 L 360 244 L 400 248 L 400 300 L 0 300 Z" fill="#0a0506"/>
+          <g fill="#0a0506">
+            <path d="M 50 248 q -3 -9 -5 -1 q -3 -7 -5 0 q -2 -5 -4 0 q -3 -8 -5 0 q -2 -6 -4 0 q -3 -7 -5 0 z"/>
+            <path d="M 75 248 q -3 -10 -6 -2 q -3 -8 -6 0 q -3 -6 -5 0 q -3 -9 -6 0 z"/>
+            <path d="M 350 248 q 3 -9 5 -1 q 3 -7 5 0 q 2 -5 4 0 q 3 -8 5 0 q 2 -6 4 0 q 3 -7 5 0 z"/>
+            <path d="M 325 248 q 3 -10 6 -2 q 3 -8 6 0 q 3 -6 5 0 q 3 -9 6 0 z"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- MARKS -->
+      <div class="tile">
+        <h2>Mark · 96</h2>
+        <div class="mark-bg">
+          <svg viewBox="0 0 100 100" width="96">
+            <defs>
+              <linearGradient id="mk" x1="50%" y1="0%" x2="50%" y2="100%">
+                <stop offset="0%" stop-color="#fff7d8"/>
+                <stop offset="40%" stop-color="#ffc878"/>
+                <stop offset="80%" stop-color="#ff5a1a"/>
+                <stop offset="100%" stop-color="#5a0608"/>
+              </linearGradient>
+            </defs>
+            <path d="M 32 6 C 26 22, 8 60, 11 90 L 27 90 C 22 60, 30 28, 32 6 Z" fill="url(#mk)"/>
+            <path d="M 68 6 C 74 22, 92 60, 89 90 L 73 90 C 78 60, 70 28, 68 6 Z" fill="url(#mk)"/>
+            <rect x="0" y="88" width="100" height="12" fill="#020102"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="tile">
+        <h2>Mark · 32 (taskbar)</h2>
+        <div class="mark-bg">
+          <svg viewBox="0 0 100 100" width="32">
+            <defs>
+              <linearGradient id="mk2" x1="50%" y1="0%" x2="50%" y2="100%">
+                <stop offset="0%" stop-color="#fff7d8"/>
+                <stop offset="40%" stop-color="#ffc878"/>
+                <stop offset="80%" stop-color="#ff5a1a"/>
+                <stop offset="100%" stop-color="#5a0608"/>
+              </linearGradient>
+            </defs>
+            <path d="M 32 6 C 26 22, 8 60, 11 90 L 27 90 C 22 60, 30 28, 32 6 Z" fill="url(#mk2)"/>
+            <path d="M 68 6 C 74 22, 92 60, 89 90 L 73 90 C 78 60, 70 28, 68 6 Z" fill="url(#mk2)"/>
+            <rect x="0" y="88" width="100" height="12" fill="#020102"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,397 @@
+{
+  "generated": "2026-05-26T03:27:40.287Z",
+  "source": "C:\\Users\\matto\\Downloads\\fbx motions",
+  "results": [
+    {
+      "src": "Angry.fbx",
+      "name": "mixamo_angry",
+      "file": "mixamo_angry.bvh",
+      "sizeBytes": 650451
+    },
+    {
+      "src": "Arms Hip Hop Dance.fbx",
+      "name": "mixamo_arms_hip_hop_dance",
+      "file": "mixamo_arms_hip_hop_dance.bvh",
+      "sizeBytes": 649574
+    },
+    {
+      "src": "Bellydancing.fbx",
+      "name": "mixamo_bellydancing",
+      "file": "mixamo_bellydancing.bvh",
+      "sizeBytes": 647499
+    },
+    {
+      "src": "Booty Hip Hop Dance.fbx",
+      "name": "mixamo_booty_hip_hop_dance",
+      "file": "mixamo_booty_hip_hop_dance.bvh",
+      "sizeBytes": 646669
+    },
+    {
+      "src": "Catwalk Walk Forward HighKnees.fbx",
+      "name": "mixamo_catwalk_walk_forward_highknees",
+      "file": "mixamo_catwalk_walk_forward_highknees.bvh",
+      "sizeBytes": 652577
+    },
+    {
+      "src": "Catwalk Walk Start Backwards 180L.fbx",
+      "name": "mixamo_catwalk_walk_start_backwards_180l",
+      "file": "mixamo_catwalk_walk_start_backwards_180l.bvh",
+      "sizeBytes": 652147
+    },
+    {
+      "src": "Catwalk Walk.fbx",
+      "name": "mixamo_catwalk_walk",
+      "file": "mixamo_catwalk_walk.bvh",
+      "sizeBytes": 650735
+    },
+    {
+      "src": "Crazy Gesture.fbx",
+      "name": "mixamo_crazy_gesture",
+      "file": "mixamo_crazy_gesture.bvh",
+      "sizeBytes": 649991
+    },
+    {
+      "src": "Crying.fbx",
+      "name": "mixamo_crying",
+      "file": "mixamo_crying.bvh",
+      "sizeBytes": 650096
+    },
+    {
+      "src": "Dancing (1).fbx",
+      "name": "mixamo_dancing_1",
+      "file": "mixamo_dancing_1.bvh",
+      "sizeBytes": 648314
+    },
+    {
+      "src": "Dancing.fbx",
+      "name": "mixamo_dancing",
+      "file": "mixamo_dancing.bvh",
+      "sizeBytes": 649280
+    },
+    {
+      "src": "Excited.fbx",
+      "name": "mixamo_excited",
+      "file": "mixamo_excited.bvh",
+      "sizeBytes": 650699
+    },
+    {
+      "src": "Falling.fbx",
+      "name": "mixamo_falling",
+      "file": "mixamo_falling.bvh",
+      "sizeBytes": 651700
+    },
+    {
+      "src": "Female Peek And Aim.fbx",
+      "name": "mixamo_female_peek_and_aim",
+      "file": "mixamo_female_peek_and_aim.bvh",
+      "sizeBytes": 652056
+    },
+    {
+      "src": "Femme Peek Around Corner.fbx",
+      "name": "mixamo_femme_peek_around_corner",
+      "file": "mixamo_femme_peek_around_corner.bvh",
+      "sizeBytes": 648898
+    },
+    {
+      "src": "Focus.fbx",
+      "name": "mixamo_focus",
+      "file": "mixamo_focus.bvh",
+      "sizeBytes": 653043
+    },
+    {
+      "src": "Happy.fbx",
+      "name": "mixamo_happy",
+      "file": "mixamo_happy.bvh",
+      "sizeBytes": 649112
+    },
+    {
+      "src": "Hip Hop Dancing (1).fbx",
+      "name": "mixamo_hip_hop_dancing_1",
+      "file": "mixamo_hip_hop_dancing_1.bvh",
+      "sizeBytes": 646540
+    },
+    {
+      "src": "Hip Hop Dancing (2).fbx",
+      "name": "mixamo_hip_hop_dancing_2",
+      "file": "mixamo_hip_hop_dancing_2.bvh",
+      "sizeBytes": 646841
+    },
+    {
+      "src": "Hip Hop Dancing (3).fbx",
+      "name": "mixamo_hip_hop_dancing_3",
+      "file": "mixamo_hip_hop_dancing_3.bvh",
+      "sizeBytes": 647176
+    },
+    {
+      "src": "Hip Hop Dancing (4).fbx",
+      "name": "mixamo_hip_hop_dancing_4",
+      "file": "mixamo_hip_hop_dancing_4.bvh",
+      "sizeBytes": 648807
+    },
+    {
+      "src": "Hip Hop Dancing (5).fbx",
+      "name": "mixamo_hip_hop_dancing_5",
+      "file": "mixamo_hip_hop_dancing_5.bvh",
+      "sizeBytes": 649027
+    },
+    {
+      "src": "Hip Hop Dancing (6).fbx",
+      "name": "mixamo_hip_hop_dancing_6",
+      "file": "mixamo_hip_hop_dancing_6.bvh",
+      "sizeBytes": 650487
+    },
+    {
+      "src": "Hip Hop Dancing (7).fbx",
+      "name": "mixamo_hip_hop_dancing_7",
+      "file": "mixamo_hip_hop_dancing_7.bvh",
+      "sizeBytes": 649890
+    },
+    {
+      "src": "Hip Hop Dancing (8).fbx",
+      "name": "mixamo_hip_hop_dancing_8",
+      "file": "mixamo_hip_hop_dancing_8.bvh",
+      "sizeBytes": 649999
+    },
+    {
+      "src": "Hip Hop Dancing.fbx",
+      "name": "mixamo_hip_hop_dancing",
+      "file": "mixamo_hip_hop_dancing.bvh",
+      "sizeBytes": 646823
+    },
+    {
+      "src": "Idle.fbx",
+      "name": "mixamo_idle",
+      "file": "mixamo_idle.bvh",
+      "sizeBytes": 649690
+    },
+    {
+      "src": "Jazz Dancing.fbx",
+      "name": "mixamo_jazz_dancing",
+      "file": "mixamo_jazz_dancing.bvh",
+      "sizeBytes": 644062
+    },
+    {
+      "src": "Leaning On A Wall.fbx",
+      "name": "mixamo_leaning_on_a_wall",
+      "file": "mixamo_leaning_on_a_wall.bvh",
+      "sizeBytes": 648284
+    },
+    {
+      "src": "Left Turn.fbx",
+      "name": "mixamo_left_turn",
+      "file": "mixamo_left_turn.bvh",
+      "sizeBytes": 649353
+    },
+    {
+      "src": "Macarena Dance.fbx",
+      "name": "mixamo_macarena_dance",
+      "file": "mixamo_macarena_dance.bvh",
+      "sizeBytes": 648005
+    },
+    {
+      "src": "Ninja Idle (1).fbx",
+      "name": "mixamo_ninja_idle_1",
+      "file": "mixamo_ninja_idle_1.bvh",
+      "sizeBytes": 654622
+    },
+    {
+      "src": "Ninja Idle.fbx",
+      "name": "mixamo_ninja_idle",
+      "file": "mixamo_ninja_idle.bvh",
+      "sizeBytes": 654209
+    },
+    {
+      "src": "Pacing And Talking On A Phone.fbx",
+      "name": "mixamo_pacing_and_talking_on_a_phone",
+      "file": "mixamo_pacing_and_talking_on_a_phone.bvh",
+      "sizeBytes": 651601
+    },
+    {
+      "src": "Plotting.fbx",
+      "name": "mixamo_plotting",
+      "file": "mixamo_plotting.bvh",
+      "sizeBytes": 646666
+    },
+    {
+      "src": "Rejected.fbx",
+      "name": "mixamo_rejected",
+      "file": "mixamo_rejected.bvh",
+      "sizeBytes": 649388
+    },
+    {
+      "src": "Right Turn.fbx",
+      "name": "mixamo_right_turn",
+      "file": "mixamo_right_turn.bvh",
+      "sizeBytes": 649754
+    },
+    {
+      "src": "Rumba Dancing.fbx",
+      "name": "mixamo_rumba_dancing",
+      "file": "mixamo_rumba_dancing.bvh",
+      "sizeBytes": 646113
+    },
+    {
+      "src": "Run.fbx",
+      "name": "mixamo_run",
+      "file": "mixamo_run.bvh",
+      "sizeBytes": 655553
+    },
+    {
+      "src": "Salsa Dancing.fbx",
+      "name": "mixamo_salsa_dancing",
+      "file": "mixamo_salsa_dancing.bvh",
+      "sizeBytes": 645951
+    },
+    {
+      "src": "Samba Dancing (1).fbx",
+      "name": "mixamo_samba_dancing_1",
+      "file": "mixamo_samba_dancing_1.bvh",
+      "sizeBytes": 650512
+    },
+    {
+      "src": "Samba Dancing (2).fbx",
+      "name": "mixamo_samba_dancing_2",
+      "file": "mixamo_samba_dancing_2.bvh",
+      "sizeBytes": 650343
+    },
+    {
+      "src": "Samba Dancing (3).fbx",
+      "name": "mixamo_samba_dancing_3",
+      "file": "mixamo_samba_dancing_3.bvh",
+      "sizeBytes": 648907
+    },
+    {
+      "src": "Samba Dancing.fbx",
+      "name": "mixamo_samba_dancing",
+      "file": "mixamo_samba_dancing.bvh",
+      "sizeBytes": 648827
+    },
+    {
+      "src": "Snake Hip Hop Dance.fbx",
+      "name": "mixamo_snake_hip_hop_dance",
+      "file": "mixamo_snake_hip_hop_dance.bvh",
+      "sizeBytes": 649136
+    },
+    {
+      "src": "Standing Greeting.fbx",
+      "name": "mixamo_standing_greeting",
+      "file": "mixamo_standing_greeting.bvh",
+      "sizeBytes": 647589
+    },
+    {
+      "src": "Step Hip Hop Dance.fbx",
+      "name": "mixamo_step_hip_hop_dance",
+      "file": "mixamo_step_hip_hop_dance.bvh",
+      "sizeBytes": 649725
+    },
+    {
+      "src": "Talking (1).fbx",
+      "name": "mixamo_talking_1",
+      "file": "mixamo_talking_1.bvh",
+      "sizeBytes": 650905
+    },
+    {
+      "src": "Talking On Phone.fbx",
+      "name": "mixamo_talking_on_phone",
+      "file": "mixamo_talking_on_phone.bvh",
+      "sizeBytes": 651836
+    },
+    {
+      "src": "Talking.fbx",
+      "name": "mixamo_talking",
+      "file": "mixamo_talking.bvh",
+      "sizeBytes": 648414
+    },
+    {
+      "src": "Taunt.fbx",
+      "name": "mixamo_taunt",
+      "file": "mixamo_taunt.bvh",
+      "sizeBytes": 649374
+    },
+    {
+      "src": "Texting And Walking.fbx",
+      "name": "mixamo_texting_and_walking",
+      "file": "mixamo_texting_and_walking.bvh",
+      "sizeBytes": 651184
+    },
+    {
+      "src": "Thankful.fbx",
+      "name": "mixamo_thankful",
+      "file": "mixamo_thankful.bvh",
+      "sizeBytes": 648204
+    },
+    {
+      "src": "Threatening.fbx",
+      "name": "mixamo_threatening",
+      "file": "mixamo_threatening.bvh",
+      "sizeBytes": 649431
+    },
+    {
+      "src": "Twist Dance.fbx",
+      "name": "mixamo_twist_dance",
+      "file": "mixamo_twist_dance.bvh",
+      "sizeBytes": 653113
+    },
+    {
+      "src": "Walk In Circle.fbx",
+      "name": "mixamo_walk_in_circle",
+      "file": "mixamo_walk_in_circle.bvh",
+      "sizeBytes": 648972
+    },
+    {
+      "src": "X Bot.fbx",
+      "name": "mixamo_x_bot",
+      "file": "mixamo_x_bot.bvh",
+      "sizeBytes": 714889
+    },
+    {
+      "src": "gangnam style.fbx",
+      "name": "mixamo_gangnam_style",
+      "file": "mixamo_gangnam_style.bvh",
+      "sizeBytes": 653415
+    },
+    {
+      "src": "jump.fbx",
+      "name": "mixamo_jump",
+      "file": "mixamo_jump.bvh",
+      "sizeBytes": 648479
+    },
+    {
+      "src": "left strafe walking.fbx",
+      "name": "mixamo_left_strafe_walking",
+      "file": "mixamo_left_strafe_walking.bvh",
+      "sizeBytes": 650865
+    },
+    {
+      "src": "left turn 90.fbx",
+      "name": "mixamo_left_turn_90",
+      "file": "mixamo_left_turn_90.bvh",
+      "sizeBytes": 649422
+    },
+    {
+      "src": "right strafe walking.fbx",
+      "name": "mixamo_right_strafe_walking",
+      "file": "mixamo_right_strafe_walking.bvh",
+      "sizeBytes": 651383
+    },
+    {
+      "src": "right turn 90.fbx",
+      "name": "mixamo_right_turn_90",
+      "file": "mixamo_right_turn_90.bvh",
+      "sizeBytes": 648311
+    },
+    {
+      "src": "skinning test.fbx",
+      "name": "mixamo_skinning_test",
+      "file": "mixamo_skinning_test.bvh",
+      "sizeBytes": 645090
+    },
+    {
+      "src": "walking.fbx",
+      "name": "mixamo_walking",
+      "file": "mixamo_walking.bvh",
+      "sizeBytes": 649550
+    }
+  ],
+  "errors": []
+}

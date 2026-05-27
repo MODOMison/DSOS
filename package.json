@@ -1,0 +1,22 @@
+{
+  "name": "dsos",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Devil's Sunrise Operating System — an AI + cybersecurity workbench themed as a fake OS",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "install:all": "npm --prefix frontend install && npm --prefix backend install",
+    "dev": "concurrently -n backend,frontend -c red,yellow \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:desktop": "concurrently -k -n backend,frontend,electron -c red,yellow,magenta \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\" \"npm run electron:wait\"",
+    "electron:wait": "wait-on http://localhost:5173 && electron .",
+    "electron": "electron .",
+    "build": "npm --prefix frontend run build && npm --prefix backend run build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "electron": "^42.1.0",
+    "wait-on": "^9.0.10"
+  }
+}

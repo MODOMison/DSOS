@@ -1,0 +1,462 @@
+{
+  "generated": "2026-05-25T19:22:25.575Z",
+  "source": "CMU Motion Capture Database via una-dinosauria/cmu-mocap",
+  "clips": [
+    {
+      "file": "cmu_sit_thinker.bvh",
+      "name": "cmu_sit_thinker",
+      "category": "idle",
+      "cmu": "13_04",
+      "sizeBytes": 2647717
+    },
+    {
+      "file": "cmu_sit_fidget.bvh",
+      "name": "cmu_sit_fidget",
+      "category": "idle",
+      "cmu": "13_05",
+      "sizeBytes": 2455872
+    },
+    {
+      "file": "cmu_sit_ground_relax.bvh",
+      "name": "cmu_sit_ground_relax",
+      "category": "idle",
+      "cmu": "82_05",
+      "sizeBytes": 1269936
+    },
+    {
+      "file": "cmu_stand_static.bvh",
+      "name": "cmu_stand_static",
+      "category": "idle",
+      "cmu": "82_01",
+      "sizeBytes": 10439
+    },
+    {
+      "file": "cmu_stand_static_2.bvh",
+      "name": "cmu_stand_static_2",
+      "category": "idle",
+      "cmu": "82_18",
+      "sizeBytes": 10316
+    },
+    {
+      "file": "cmu_stand_from_sit.bvh",
+      "name": "cmu_stand_from_sit",
+      "category": "action",
+      "cmu": "13_01",
+      "sizeBytes": 1285021
+    },
+    {
+      "file": "cmu_walk_confident.bvh",
+      "name": "cmu_walk_confident",
+      "category": "walk",
+      "cmu": "82_09",
+      "sizeBytes": 712543
+    },
+    {
+      "file": "cmu_walk_sad.bvh",
+      "name": "cmu_walk_sad",
+      "category": "walk",
+      "cmu": "82_10",
+      "sizeBytes": 314568
+    },
+    {
+      "file": "cmu_walk_normal.bvh",
+      "name": "cmu_walk_normal",
+      "category": "walk",
+      "cmu": "82_11",
+      "sizeBytes": 384560
+    },
+    {
+      "file": "cmu_walk_happy.bvh",
+      "name": "cmu_walk_happy",
+      "category": "walk",
+      "cmu": "82_12",
+      "sizeBytes": 224953
+    },
+    {
+      "file": "cmu_walk_slow_to_stop.bvh",
+      "name": "cmu_walk_slow_to_stop",
+      "category": "walk",
+      "cmu": "82_14",
+      "sizeBytes": 508269
+    },
+    {
+      "file": "cmu_laugh_1.bvh",
+      "name": "cmu_laugh_1",
+      "category": "joy",
+      "cmu": "13_14",
+      "sizeBytes": 1341486
+    },
+    {
+      "file": "cmu_laugh_2.bvh",
+      "name": "cmu_laugh_2",
+      "category": "joy",
+      "cmu": "13_15",
+      "sizeBytes": 1311600
+    },
+    {
+      "file": "cmu_laugh_3.bvh",
+      "name": "cmu_laugh_3",
+      "category": "joy",
+      "cmu": "13_16",
+      "sizeBytes": 1255702
+    },
+    {
+      "file": "cmu_direct_traffic_wave.bvh",
+      "name": "cmu_direct_traffic_wave",
+      "category": "action",
+      "cmu": "13_26",
+      "sizeBytes": 1683695
+    },
+    {
+      "file": "cmu_wave_and_point.bvh",
+      "name": "cmu_wave_and_point",
+      "category": "action",
+      "cmu": "13_27",
+      "sizeBytes": 2321268
+    },
+    {
+      "file": "cmu_handshake.bvh",
+      "name": "cmu_handshake",
+      "category": "action",
+      "cmu": "79_06",
+      "sizeBytes": 323460
+    },
+    {
+      "file": "cmu_drink_soda.bvh",
+      "name": "cmu_drink_soda",
+      "category": "life",
+      "cmu": "13_07",
+      "sizeBytes": 790219
+    },
+    {
+      "file": "cmu_drink_quick.bvh",
+      "name": "cmu_drink_quick",
+      "category": "life",
+      "cmu": "13_09",
+      "sizeBytes": 597935
+    },
+    {
+      "file": "cmu_eat_dinner.bvh",
+      "name": "cmu_eat_dinner",
+      "category": "life",
+      "cmu": "79_12",
+      "sizeBytes": 560526
+    },
+    {
+      "file": "cmu_eat_sandwich.bvh",
+      "name": "cmu_eat_sandwich",
+      "category": "life",
+      "cmu": "79_15",
+      "sizeBytes": 478968
+    },
+    {
+      "file": "cmu_wash_windows.bvh",
+      "name": "cmu_wash_windows",
+      "category": "life",
+      "cmu": "13_20",
+      "sizeBytes": 3159873
+    },
+    {
+      "file": "cmu_sweep_floor.bvh",
+      "name": "cmu_sweep_floor",
+      "category": "life",
+      "cmu": "13_23",
+      "sizeBytes": 2239283
+    },
+    {
+      "file": "cmu_chop_wood.bvh",
+      "name": "cmu_chop_wood",
+      "category": "life",
+      "cmu": "79_01",
+      "sizeBytes": 330763
+    },
+    {
+      "file": "cmu_dig.bvh",
+      "name": "cmu_dig",
+      "category": "life",
+      "cmu": "79_04",
+      "sizeBytes": 501838
+    },
+    {
+      "file": "cmu_knead_dough.bvh",
+      "name": "cmu_knead_dough",
+      "category": "life",
+      "cmu": "79_14",
+      "sizeBytes": 402500
+    },
+    {
+      "file": "cmu_play_violin.bvh",
+      "name": "cmu_play_violin",
+      "category": "life",
+      "cmu": "79_17",
+      "sizeBytes": 443596
+    },
+    {
+      "file": "cmu_play_drums.bvh",
+      "name": "cmu_play_drums",
+      "category": "life",
+      "cmu": "79_18",
+      "sizeBytes": 440835
+    },
+    {
+      "file": "cmu_play_piano.bvh",
+      "name": "cmu_play_piano",
+      "category": "life",
+      "cmu": "79_19",
+      "sizeBytes": 378204
+    },
+    {
+      "file": "cmu_tiptoe_reach.bvh",
+      "name": "cmu_tiptoe_reach",
+      "category": "action",
+      "cmu": "13_10",
+      "sizeBytes": 1329369
+    },
+    {
+      "file": "cmu_forward_jump.bvh",
+      "name": "cmu_forward_jump",
+      "category": "action",
+      "cmu": "13_11",
+      "sizeBytes": 231361
+    },
+    {
+      "file": "cmu_boxing_1.bvh",
+      "name": "cmu_boxing_1",
+      "category": "action",
+      "cmu": "13_17",
+      "sizeBytes": 2707968
+    },
+    {
+      "file": "cmu_boxing_2.bvh",
+      "name": "cmu_boxing_2",
+      "category": "action",
+      "cmu": "13_18",
+      "sizeBytes": 1675315
+    },
+    {
+      "file": "cmu_jumping_jacks.bvh",
+      "name": "cmu_jumping_jacks",
+      "category": "action",
+      "cmu": "13_29",
+      "sizeBytes": 2532643
+    },
+    {
+      "file": "cmu_dance_charleston_1.bvh",
+      "name": "cmu_dance_charleston_1",
+      "category": "dance",
+      "cmu": "93_01",
+      "sizeBytes": 16680
+    },
+    {
+      "file": "cmu_dance_charleston_2.bvh",
+      "name": "cmu_dance_charleston_2",
+      "category": "dance",
+      "cmu": "93_02",
+      "sizeBytes": 839588
+    },
+    {
+      "file": "cmu_dance_charleston_3.bvh",
+      "name": "cmu_dance_charleston_3",
+      "category": "dance",
+      "cmu": "93_03",
+      "sizeBytes": 251314
+    },
+    {
+      "file": "cmu_dance_charleston_4.bvh",
+      "name": "cmu_dance_charleston_4",
+      "category": "dance",
+      "cmu": "93_08",
+      "sizeBytes": 315347
+    },
+    {
+      "file": "cmu_dance_salsa_1.bvh",
+      "name": "cmu_dance_salsa_1",
+      "category": "dance",
+      "cmu": "60_01",
+      "sizeBytes": 1261130
+    },
+    {
+      "file": "cmu_dance_salsa_2.bvh",
+      "name": "cmu_dance_salsa_2",
+      "category": "dance",
+      "cmu": "60_05",
+      "sizeBytes": 940479
+    },
+    {
+      "file": "cmu_dance_salsa_3.bvh",
+      "name": "cmu_dance_salsa_3",
+      "category": "dance",
+      "cmu": "60_12",
+      "sizeBytes": 948198
+    },
+    {
+      "file": "cmu_dance_salsa_4.bvh",
+      "name": "cmu_dance_salsa_4",
+      "category": "dance",
+      "cmu": "61_01",
+      "sizeBytes": 1259022
+    },
+    {
+      "file": "cmu_dance_salsa_5.bvh",
+      "name": "cmu_dance_salsa_5",
+      "category": "dance",
+      "cmu": "61_05",
+      "sizeBytes": 943852
+    },
+    {
+      "file": "cmu_dance_indian_1.bvh",
+      "name": "cmu_dance_indian_1",
+      "category": "dance",
+      "cmu": "94_01",
+      "sizeBytes": 2035226
+    },
+    {
+      "file": "cmu_dance_indian_2.bvh",
+      "name": "cmu_dance_indian_2",
+      "category": "dance",
+      "cmu": "94_03",
+      "sizeBytes": 2096028
+    },
+    {
+      "file": "cmu_dance_indian_3.bvh",
+      "name": "cmu_dance_indian_3",
+      "category": "dance",
+      "cmu": "94_07",
+      "sizeBytes": 1304430
+    },
+    {
+      "file": "cmu_dance_modern_1.bvh",
+      "name": "cmu_dance_modern_1",
+      "category": "dance",
+      "cmu": "05_02",
+      "sizeBytes": 631571
+    },
+    {
+      "file": "cmu_dance_modern_2.bvh",
+      "name": "cmu_dance_modern_2",
+      "category": "dance",
+      "cmu": "05_06",
+      "sizeBytes": 506549
+    },
+    {
+      "file": "cmu_dance_modern_3.bvh",
+      "name": "cmu_dance_modern_3",
+      "category": "dance",
+      "cmu": "05_09",
+      "sizeBytes": 641954
+    },
+    {
+      "file": "cmu_dance_break_1.bvh",
+      "name": "cmu_dance_break_1",
+      "category": "dance",
+      "cmu": "85_01",
+      "sizeBytes": 564999
+    },
+    {
+      "file": "cmu_dance_break_2.bvh",
+      "name": "cmu_dance_break_2",
+      "category": "dance",
+      "cmu": "85_12",
+      "sizeBytes": 2545131
+    },
+    {
+      "file": "cmu_flip_acro_1.bvh",
+      "name": "cmu_flip_acro_1",
+      "category": "action",
+      "cmu": "88_01",
+      "sizeBytes": 117952
+    },
+    {
+      "file": "cmu_flip_acro_2.bvh",
+      "name": "cmu_flip_acro_2",
+      "category": "action",
+      "cmu": "88_05",
+      "sizeBytes": 88809
+    },
+    {
+      "file": "cmu_cartwheel_1.bvh",
+      "name": "cmu_cartwheel_1",
+      "category": "action",
+      "cmu": "90_01",
+      "sizeBytes": 440954
+    },
+    {
+      "file": "cmu_female_general_1.bvh",
+      "name": "cmu_female_general_1",
+      "category": "idle",
+      "cmu": "106_01",
+      "sizeBytes": 46466
+    },
+    {
+      "file": "cmu_female_general_2.bvh",
+      "name": "cmu_female_general_2",
+      "category": "idle",
+      "cmu": "106_05",
+      "sizeBytes": 132868
+    },
+    {
+      "file": "cmu_female_general_3.bvh",
+      "name": "cmu_female_general_3",
+      "category": "idle",
+      "cmu": "106_10",
+      "sizeBytes": 288695
+    },
+    {
+      "file": "cmu_female_general_4.bvh",
+      "name": "cmu_female_general_4",
+      "category": "idle",
+      "cmu": "106_18",
+      "sizeBytes": 224925
+    },
+    {
+      "file": "cmu_female_general_5.bvh",
+      "name": "cmu_female_general_5",
+      "category": "idle",
+      "cmu": "106_25",
+      "sizeBytes": 349514
+    },
+    {
+      "file": "cmu_upper_body_motion.bvh",
+      "name": "cmu_upper_body_motion",
+      "category": "idle",
+      "cmu": "56_03",
+      "sizeBytes": 3478556
+    },
+    {
+      "file": "cmu_assorted_1.bvh",
+      "name": "cmu_assorted_1",
+      "category": "idle",
+      "cmu": "80_03",
+      "sizeBytes": 369487
+    },
+    {
+      "file": "cmu_assorted_2.bvh",
+      "name": "cmu_assorted_2",
+      "category": "idle",
+      "cmu": "80_09",
+      "sizeBytes": 849181
+    },
+    {
+      "file": "cmu_assorted_3.bvh",
+      "name": "cmu_assorted_3",
+      "category": "idle",
+      "cmu": "80_16",
+      "sizeBytes": 700582
+    },
+    {
+      "file": "cmu_careful_step.bvh",
+      "name": "cmu_careful_step",
+      "category": "action",
+      "cmu": "77_03",
+      "sizeBytes": 555951
+    },
+    {
+      "file": "cmu_hopscotch.bvh",
+      "name": "cmu_hopscotch",
+      "category": "action",
+      "cmu": "75_09",
+      "sizeBytes": 209420
+    }
+  ],
+  "failures": []
+}

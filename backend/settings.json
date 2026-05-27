@@ -1,0 +1,11 @@
+{
+  "backend": "builtin",
+  "anthropicKey": "",
+  "anthropicModel": "claude-haiku-4-5",
+  "ollamaUrl": "http://localhost:11434",
+  "ollamaModel": "mistral-nemo:12b",
+  "builtinModelPath": "",
+  "openaiCompatUrl": "http://localhost:5000/v1",
+  "openaiCompatModel": "MythoMax-L2-13B-GPTQ",
+  "openaiCompatKey": ""
+}

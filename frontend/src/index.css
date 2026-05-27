@@ -1,0 +1,206 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  background: radial-gradient(
+      circle at 50% 110%,
+      #5a0a0a 0%,
+      #2a0608 30%,
+      #0a0506 70%
+    )
+    fixed;
+  overflow: hidden;
+}
+
+/* Companion (floating Oracle) window — Electron paints the host desktop
+   through any transparent area, so kill the gradient. */
+html.companion-mode,
+body.companion-mode,
+.companion-mode #root {
+  background: transparent !important;
+  overflow: hidden;
+}
+
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  color: theme("colors.dsos.bone");
+}
+
+::selection {
+  background: theme("colors.dsos.flame");
+  color: #0a0506;
+}
+
+.dsos-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.dsos-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+.dsos-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ff8a2a, #c2261d);
+  border-radius: 4px;
+}
+
+.script {
+  font-family: theme("fontFamily.script");
+}
+
+.mono {
+  font-family: theme("fontFamily.mono");
+}
+
+.glass {
+  background: linear-gradient(
+    180deg,
+    rgba(36, 16, 19, 0.92),
+    rgba(18, 7, 9, 0.92)
+  );
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 138, 42, 0.18);
+  box-shadow: 0 10px 60px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 184, 106, 0.08);
+}
+
+.text-glow {
+  text-shadow: 0 0 10px rgba(255, 138, 42, 0.6),
+    0 0 24px rgba(194, 38, 29, 0.4);
+}
+
+.btn-ember {
+  @apply px-3 py-1.5 rounded-md text-sm font-medium transition-all;
+  background: linear-gradient(180deg, #c2261d, #7a1218);
+  border: 1px solid rgba(255, 138, 42, 0.4);
+  color: #f4ead4;
+}
+.btn-ember:hover {
+  background: linear-gradient(180deg, #ff4a1f, #c2261d);
+  box-shadow: 0 0 16px rgba(255, 74, 31, 0.5);
+}
+.btn-ember:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  @apply px-3 py-1.5 rounded-md text-sm transition-all;
+  background: rgba(255, 138, 42, 0.06);
+  border: 1px solid rgba(255, 138, 42, 0.2);
+  color: #f4ead4;
+}
+.btn-ghost:hover {
+  background: rgba(255, 138, 42, 0.14);
+  border-color: rgba(255, 138, 42, 0.5);
+}
+
+.input-ember {
+  @apply px-3 py-1.5 rounded-md text-sm w-full;
+  background: rgba(10, 5, 6, 0.6);
+  border: 1px solid rgba(255, 138, 42, 0.25);
+  color: #f4ead4;
+  outline: none;
+}
+.input-ember:focus {
+  border-color: rgba(255, 138, 42, 0.7);
+  box-shadow: 0 0 0 2px rgba(255, 74, 31, 0.2);
+}
+
+/* Markdown rendering inside Oracle messages. Scoped so it doesn't bleed. */
+.prose-oracle p {
+  margin: 0 0 0.5em 0;
+  line-height: 1.5;
+}
+.prose-oracle p:last-child {
+  margin-bottom: 0;
+}
+.prose-oracle strong {
+  color: #ffb86a;
+  font-weight: 600;
+}
+.prose-oracle em {
+  color: #f4ead4;
+}
+.prose-oracle code {
+  font-family: theme("fontFamily.mono");
+  background: rgba(255, 138, 42, 0.12);
+  color: #ffb86a;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 0.92em;
+}
+.prose-oracle pre {
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 138, 42, 0.2);
+  border-radius: 4px;
+  padding: 8px 10px;
+  margin: 0.5em 0;
+  overflow-x: auto;
+  font-size: 11px;
+}
+.prose-oracle pre code {
+  background: transparent;
+  color: #f4ead4;
+  padding: 0;
+}
+.prose-oracle ul,
+.prose-oracle ol {
+  margin: 0.25em 0 0.5em 0;
+  padding-left: 1.25em;
+}
+.prose-oracle ul {
+  list-style: disc;
+}
+.prose-oracle ol {
+  list-style: decimal;
+}
+.prose-oracle li {
+  margin: 0.15em 0;
+}
+.prose-oracle h1,
+.prose-oracle h2,
+.prose-oracle h3,
+.prose-oracle h4 {
+  color: #ffb86a;
+  font-weight: 600;
+  margin: 0.6em 0 0.3em 0;
+  line-height: 1.2;
+}
+.prose-oracle h1 { font-size: 1.15em; }
+.prose-oracle h2 { font-size: 1.08em; }
+.prose-oracle h3, .prose-oracle h4 { font-size: 1em; }
+.prose-oracle a {
+  color: #ff8a2a;
+  text-decoration: underline;
+}
+.prose-oracle a:hover {
+  color: #ffb86a;
+}
+.prose-oracle blockquote {
+  border-left: 2px solid rgba(255, 138, 42, 0.5);
+  padding-left: 0.6em;
+  margin: 0.4em 0;
+  color: #d6c8a8;
+  font-style: italic;
+}
+.prose-oracle table {
+  border-collapse: collapse;
+  margin: 0.5em 0;
+  font-size: 11px;
+}
+.prose-oracle th,
+.prose-oracle td {
+  border: 1px solid rgba(255, 138, 42, 0.25);
+  padding: 3px 6px;
+  text-align: left;
+}
+.prose-oracle th {
+  background: rgba(255, 138, 42, 0.1);
+  color: #ffb86a;
+}

@@ -17,12 +17,17 @@ export const settingsRouter = Router();
 // curated model lists.
 settingsRouter.get("/", async (_req, res) => {
   const s = await loadSettings();
+  // builtin + openai-compat probes only fire when the user actually selected
+  // that backend (or "auto"). Probing builtin unconditionally would load the
+  // node-llama-cpp native addon on every settings load, which blocks the Node
+  // event loop under tsx and freezes the whole settings panel on "loading...".
+  const probeBuiltinNeeded = s.backend === "builtin" || s.backend === "auto";
   const [ollama, builtin] = await Promise.all([
     probeOllama(s.ollamaUrl),
-    probeBuiltin(s.builtinModelPath || undefined),
+    probeBuiltinNeeded
+      ? probeBuiltin(s.builtinModelPath || undefined)
+      : Promise.resolve({ available: false as const, reason: undefined }),
   ]);
-  // openai-compat probe only fires when the user actually selected it,
-  // to avoid pinging a localhost port on every settings load.
   const openaiCompat =
     s.backend === "openai-compat"
       ? await probeOpenAICompat(s.openaiCompatUrl)

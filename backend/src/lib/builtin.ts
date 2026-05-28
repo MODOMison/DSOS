@@ -1,19 +1,28 @@
 // Built-in GGUF backend for Oracle.
 //
-// Loads a local GGUF model file directly into the DSOS Express process via
-// node-llama-cpp. No external server (Ollama, text-gen-webui) required —
-// the inference engine and model live inside this Node process.
+// Loads a local GGUF model file into a CHILD PROCESS via node-llama-cpp.
+// User drops a .gguf file into backend/models/ and we auto-pick it (or pin
+// an explicit path via the builtinModelPath setting).
 //
-// User drops a .gguf file into backend/models/ and we auto-pick it. They
-// can also pin an explicit path via the builtinModelPath setting.
+// Why a child process? node-llama-cpp is a native addon. `await import`ing
+// it blocks the Node event loop, and under `tsx watch` on Windows that
+// block never releases — the whole backend wedges (see
+// reference-dsos-dev-server memory). The child process runs under plain
+// `node` (not tsx), so the native addon can't touch the main event loop:
+// settings, status, and other routes stay responsive even while the 7GB
+// model is loading or generating tokens.
 //
-// node-llama-cpp is declared as an OPTIONAL dependency in package.json, so
-// users who don't want the built-in path don't pay the install cost. All
-// access goes through lazy dynamic imports — if the package isn't installed,
-// probeBuiltin returns available=false with a friendly reason.
+// node-llama-cpp is an OPTIONAL dependency. If it isn't installed,
+// probeBuiltin returns available=false with a friendly reason and the
+// worker is never spawned.
 
 import fs from "node:fs";
 import path from "node:path";
+import { spawn, type ChildProcessByStdio } from "node:child_process";
+import readline from "node:readline";
+import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+import type { Readable, Writable } from "node:stream";
 
 type ClientMsg = { role: "user" | "assistant"; content: string };
 type Sender = (event: string, data: unknown) => void;
@@ -72,10 +81,13 @@ export interface BuiltinProbeResult {
 }
 
 export async function probeBuiltin(explicitPath?: string): Promise<BuiltinProbeResult> {
-  // Check that node-llama-cpp is installed
+  // Check that node-llama-cpp is installed WITHOUT executing it. A bare
+  // `await import("node-llama-cpp")` loads the native addon, which blocks the
+  // Node event loop synchronously under tsx on Windows (freezing every other
+  // request). require.resolve only does a path lookup — instant. The real
+  // (heavy) import happens in the worker child process.
   try {
-    // @ts-ignore optional dependency
-    await import("node-llama-cpp");
+    createRequire(import.meta.url).resolve("node-llama-cpp");
   } catch {
     return {
       available: false,
@@ -98,54 +110,116 @@ export async function probeBuiltin(explicitPath?: string): Promise<BuiltinProbeR
 }
 
 // ──────────────────────────────────────────────────────────────────
-// Model + context cache.
+// Worker spawn + IPC.
 //
-// Loading a 7-13B GGUF takes 5-30s. We load once at first request, hold
-// in memory, and create a fresh chat session per conversation.
-// Re-importing the module per request would also reset this — to keep it
-// across hot reloads in dev we stash it on globalThis.
+// Singleton on globalThis so it survives module re-evaluation if tsx ever
+// reloads this file without killing the whole process. tsx-watch normally
+// kills the parent on file change → the worker's stdin closes → worker
+// self-terminates (handled in builtinWorker.mjs) → no orphan 7GB process.
 // ──────────────────────────────────────────────────────────────────
 
-interface BuiltinModelHandle {
-  model: unknown;
-  llama: unknown;
-  modelPath: string;
+type WorkerMsg =
+  | { type: "ready" }
+  | { type: "loading"; modelPath: string }
+  | { type: "loaded"; ms: number }
+  | { type: "text"; id: string; delta: string }
+  | { type: "done"; id: string }
+  | { type: "error"; id: string; message: string }
+  | { type: "pong" };
+
+interface WorkerHandle {
+  child: ChildProcessByStdio<Writable, Readable, Readable>;
+  pending: Map<string, (msg: WorkerMsg) => void>;
+  ready: Promise<void>;
 }
 
 declare global {
   // eslint-disable-next-line no-var
-  var __dsos_builtin_model: BuiltinModelHandle | undefined;
+  var __dsos_builtin_worker: WorkerHandle | undefined;
 }
 
-async function ensureModelLoaded(modelPath: string): Promise<BuiltinModelHandle> {
-  if (globalThis.__dsos_builtin_model?.modelPath === modelPath) {
-    return globalThis.__dsos_builtin_model;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const WORKER_SCRIPT = path.resolve(__dirname, "builtinWorker.mjs");
+
+function getWorker(): WorkerHandle {
+  const existing = globalThis.__dsos_builtin_worker;
+  if (existing && existing.child.exitCode === null && !existing.child.killed) {
+    return existing;
   }
-  // Dispose old model if path changed.
-  if (globalThis.__dsos_builtin_model) {
+
+  // CRITICAL: spawn with the same node binary that's running us
+  // (process.execPath), NOT tsx. The whole point of the worker is to keep
+  // the native addon's blocking import out of the tsx-watched main process.
+  const child = spawn(process.execPath, [WORKER_SCRIPT], {
+    cwd: process.cwd(),
+    stdio: ["pipe", "pipe", "pipe"],
+    windowsHide: true,
+  }) as ChildProcessByStdio<Writable, Readable, Readable>;
+
+  const pending = new Map<string, (msg: WorkerMsg) => void>();
+  let resolveReady!: () => void;
+  const ready = new Promise<void>((r) => (resolveReady = r));
+
+  const handle: WorkerHandle = { child, pending, ready };
+  globalThis.__dsos_builtin_worker = handle;
+
+  const rl = readline.createInterface({ input: child.stdout });
+  rl.on("line", (line) => {
+    const trimmed = line.trim();
+    if (!trimmed) return;
+    let msg: WorkerMsg;
     try {
-      const m = globalThis.__dsos_builtin_model.model as { dispose?: () => Promise<void> };
-      await m.dispose?.();
+      msg = JSON.parse(trimmed) as WorkerMsg;
     } catch {
-      /* ignore */
+      return;
     }
-    globalThis.__dsos_builtin_model = undefined;
-  }
+    if (msg.type === "ready") {
+      console.log("[builtin] worker ready");
+      resolveReady();
+      return;
+    }
+    if (msg.type === "loading") {
+      console.log(`[builtin] worker loading ${path.basename(msg.modelPath)}...`);
+      return;
+    }
+    if (msg.type === "loaded") {
+      console.log(`[builtin] worker loaded model in ${(msg.ms / 1000).toFixed(1)}s`);
+      return;
+    }
+    if (msg.type === "text" || msg.type === "done" || msg.type === "error") {
+      const cb = pending.get(msg.id);
+      if (cb) cb(msg);
+    }
+  });
 
-  // @ts-ignore optional dependency
-  const lib = (await import("node-llama-cpp")) as unknown as {
-    getLlama: () => Promise<{
-      loadModel: (opts: { modelPath: string }) => Promise<unknown>;
-    }>;
+  // Surface worker stderr (its own logs) prefixed.
+  child.stderr.on("data", (buf: Buffer) => {
+    process.stderr.write(buf);
+  });
+
+  child.on("exit", (code, signal) => {
+    console.log(`[builtin] worker exited code=${code} signal=${signal}`);
+    if (globalThis.__dsos_builtin_worker === handle) {
+      globalThis.__dsos_builtin_worker = undefined;
+    }
+    // Fail any in-flight chats so the SSE stream closes cleanly.
+    for (const [id, cb] of pending) {
+      cb({ type: "error", id, message: `builtin worker exited (code=${code}, signal=${signal})` });
+    }
+    pending.clear();
+  });
+
+  // Parent exit → kill worker (stdin close also triggers worker self-exit;
+  // this is belt-and-suspenders for SIGINT/SIGTERM under tsx watch).
+  const killChild = () => {
+    try { child.kill(); } catch { /* ignore */ }
   };
-  const llama = await lib.getLlama();
-  console.log(`[builtin] loading ${path.basename(modelPath)}...`);
-  const t0 = Date.now();
-  const model = await llama.loadModel({ modelPath });
-  console.log(`[builtin] loaded in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
+  process.once("exit", killChild);
+  process.once("SIGINT", killChild);
+  process.once("SIGTERM", killChild);
 
-  globalThis.__dsos_builtin_model = { model, llama, modelPath };
-  return globalThis.__dsos_builtin_model;
+  return handle;
 }
 
 export async function streamBuiltin(
@@ -153,97 +227,43 @@ export async function streamBuiltin(
   clientMessages: ClientMsg[],
   send: Sender
 ): Promise<void> {
-  let handle: BuiltinModelHandle;
+  let handle: WorkerHandle;
   try {
-    handle = await ensureModelLoaded(cfg.modelPath);
+    handle = getWorker();
+    await handle.ready;
   } catch (e) {
-    send("error", {
-      message: `Failed to load GGUF at ${cfg.modelPath}: ${(e as Error).message}`,
-    });
+    send("error", { message: `Failed to start built-in worker: ${(e as Error).message}` });
     return;
   }
 
-  try {
-    // @ts-ignore optional dependency
-    const lib = (await import("node-llama-cpp")) as unknown as {
-      LlamaChatSession: new (args: {
-        contextSequence: unknown;
-        systemPrompt: string;
-        chatWrapper?: unknown;
-      }) => {
-        prompt: (
-          text: string,
-          opts: { onTextChunk: (chunk: string) => void; maxTokens?: number }
-        ) => Promise<string>;
-      };
-      AlpacaChatWrapper: new () => unknown;
-      Llama2ChatWrapper: new () => unknown;
-      Llama3ChatWrapper: new () => unknown;
-      Llama3_1ChatWrapper: new () => unknown;
-      GeneralChatWrapper: new () => unknown;
-    };
-
-    // Pick a chat template based on filename heuristics. Most fiction-tuned
-    // models (MythoMax, Mythalion, Pygmalion variants, Wizard models) are
-    // Llama-2 + Alpaca. Modern Llama 3+ uses its own template. Without the
-    // right template the model emits EOS after one token.
-    const fname = cfg.modelPath.toLowerCase();
-    let chatWrapper: unknown;
-    if (/llama-?3\.1|llama_?3_?1/.test(fname)) {
-      chatWrapper = new lib.Llama3_1ChatWrapper();
-    } else if (/llama-?3|llama_?3/.test(fname)) {
-      chatWrapper = new lib.Llama3ChatWrapper();
-    } else if (/mytho|alpaca|wizard|mythal|pygmalion|nous-hermes-2-yi/.test(fname)) {
-      chatWrapper = new lib.AlpacaChatWrapper();
-    } else if (/llama-?2|llama_?2|l2-/.test(fname)) {
-      chatWrapper = new lib.Llama2ChatWrapper();
-    } else {
-      chatWrapper = new lib.GeneralChatWrapper();
-    }
-    console.log(`[builtin] using chat wrapper: ${chatWrapper?.constructor?.name ?? "unknown"}`);
-
-    const model = handle.model as {
-      createContext: (opts?: { contextSize?: number }) => Promise<{
-        getSequence: () => unknown;
-        dispose?: () => Promise<void>;
-      }>;
-    };
-    const context = await model.createContext({ contextSize: 4096 });
-    const sequence = context.getSequence();
-
-    const session = new lib.LlamaChatSession({
-      contextSequence: sequence,
-      systemPrompt: cfg.systemPrompt,
-      chatWrapper,
-    });
-
-    // Replay prior turns so the session has context.
-    for (let i = 0; i < clientMessages.length - 1; i++) {
-      const msg = clientMessages[i];
-      if (msg.role === "user") {
-        // Feed past user turns silently (no streaming) to build history.
-        await session.prompt(msg.content, { onTextChunk: () => {}, maxTokens: 1 });
+  const id = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+  await new Promise<void>((resolve) => {
+    handle.pending.set(id, (msg) => {
+      if (msg.type === "text") {
+        if (msg.delta) send("text", { delta: msg.delta });
+      } else if (msg.type === "done") {
+        send("done", { stop_reason: "end_turn" });
+        handle.pending.delete(id);
+        resolve();
+      } else if (msg.type === "error") {
+        send("error", { message: msg.message });
+        handle.pending.delete(id);
+        resolve();
       }
-    }
-    const finalUser = clientMessages[clientMessages.length - 1];
-    if (!finalUser || finalUser.role !== "user") {
-      send("error", { message: "Last message must be from user." });
-      try { await context.dispose?.(); } catch { /* ignore */ }
-      return;
-    }
-
-    await session.prompt(finalUser.content, {
-      maxTokens: 800,
-      onTextChunk: (chunk) => {
-        if (chunk) send("text", { delta: chunk });
-      },
     });
-
-    send("done", { stop_reason: "end_turn" });
-    try { await context.dispose?.(); } catch { /* ignore */ }
-  } catch (e) {
-    send("error", {
-      message: `Built-in inference error: ${(e as Error).message}`,
-    });
-  }
+    const req = {
+      type: "chat" as const,
+      id,
+      modelPath: cfg.modelPath,
+      systemPrompt: cfg.systemPrompt,
+      messages: clientMessages,
+    };
+    try {
+      handle.child.stdin.write(JSON.stringify(req) + "\n");
+    } catch (e) {
+      send("error", { message: `Failed to send to worker: ${(e as Error).message}` });
+      handle.pending.delete(id);
+      resolve();
+    }
+  });
 }

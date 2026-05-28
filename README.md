@@ -55,6 +55,41 @@ npm run dev:frontend    # tab 2
 
 ---
 
+## Built-in local LLM (Oracle without an API key)
+
+The Oracle defaults to a **built-in** backend that runs MythoMax-L2-13B
+locally via `node-llama-cpp` — no Anthropic key, no Ollama, no internet
+needed at chat time. The model file (~7.4 GB) is gitignored, so a fresh
+clone has to pull it once:
+
+**Windows (PowerShell):**
+```powershell
+pwsh backend\scripts\download-model.ps1
+```
+
+**macOS / Linux / Git Bash:**
+```sh
+bash backend/scripts/download-model.sh
+```
+
+The script downloads `mythomax-l2-13b.Q4_K_M.gguf` from
+[TheBloke/MythoMax-L2-13B-GGUF](https://huggingface.co/TheBloke/MythoMax-L2-13B-GGUF)
+into `backend/models/`. After it finishes, `npm run dev` and chat with
+the Oracle — the first message takes ~20-30s to load 7 GB of weights
+into RAM, then replies stream normally.
+
+> Inference runs in a child process (`backend/src/lib/builtinWorker.mjs`)
+> spawned with plain `node`, NOT under `tsx`. The native addon import
+> blocks the Node event loop under `tsx watch` on Windows, which would
+> wedge the whole backend; the child-process boundary keeps the main
+> server snappy even while the model is loading or generating.
+
+**Don't want the built-in?** Flip `backend/settings.json` to
+`"backend": "ollama"` (and run `ollama pull qwen2.5:7b`) or
+`"backend": "anthropic"` and paste a key in the Account window.
+
+---
+
 ## Accounts, tiers, and the Oracle
 
 DSOS now requires a (free) account on first run. On boot you'll see the sign-in

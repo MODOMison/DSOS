@@ -4,7 +4,7 @@ import {
   OLLAMA_MODELS,
   loadSettings,
   saveSettings,
-  type OracleSettings,
+  type ShadowsSettings,
 } from "../lib/settings.js";
 import { probeOllama } from "../lib/ollama.js";
 import { probeBuiltin } from "../lib/builtin.js";
@@ -71,7 +71,7 @@ settingsRouter.get("/", async (_req, res) => {
 
 // POST /api/settings — partial update. Pass anthropicKey:"" to clear it.
 settingsRouter.post("/", async (req, res) => {
-  const body = (req.body ?? {}) as Partial<OracleSettings>;
+  const body = (req.body ?? {}) as Partial<ShadowsSettings>;
   // Validate enum
   if (
     body.backend &&

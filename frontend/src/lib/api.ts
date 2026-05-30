@@ -135,7 +135,7 @@ export const api = {
         method: "POST",
         body: JSON.stringify({ messages }),
       }),
-    stream: streamOracle,
+    stream: streamShadows,
   },
   settings: {
     get: () => request<SettingsResponse>(`/settings`),
@@ -367,11 +367,11 @@ async function streamPullOllamaModel(
 }
 
 // ---------------------------------------------------------------
-// SSE streaming client for the Oracle agent loop.
+// SSE streaming client for the Shadows agent loop.
 // Server events: text | tool_start | tool_result | done | error
 // ---------------------------------------------------------------
 
-export type OracleEvent =
+export type ShadowsEvent =
   | { type: "text"; delta: string }
   | { type: "tool_start"; id: string; name: string; input: unknown }
   | {
@@ -384,9 +384,9 @@ export type OracleEvent =
   | { type: "done"; stop_reason: string | null }
   | { type: "error"; message: string };
 
-async function streamOracle(
+async function streamShadows(
   messages: { role: "user" | "assistant"; content: string }[],
-  onEvent: (e: OracleEvent) => void,
+  onEvent: (e: ShadowsEvent) => void,
   signal?: AbortSignal
 ): Promise<void> {
   const res = await fetch(`${base}/ai/chat/stream`, {

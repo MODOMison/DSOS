@@ -13,7 +13,7 @@ import { Brimstone } from "../apps/Brimstone";
 import { Soulreader } from "../apps/Soulreader";
 import { Armory } from "../apps/Armory";
 import { HellfireTerminal } from "../apps/HellfireTerminal";
-import { OracleAI } from "../apps/OracleAI";
+import { ShadowsAI } from "../apps/ShadowsAI";
 import { Pricing } from "../apps/Pricing";
 import { Account } from "../apps/Account";
 import { CipherCellar } from "../apps/CipherCellar";
@@ -29,7 +29,7 @@ const renderers: Record<AppId, () => ReactNode> = {
   soulreader: () => <Soulreader />,
   armory: () => <Armory />,
   terminal: () => <HellfireTerminal />,
-  oracle: () => <OracleAI />,
+  shadows: () => <ShadowsAI />,
   pricing: () => <Pricing />,
   account: () => <Account />,
   cipher: () => <CipherCellar />,
@@ -49,7 +49,7 @@ export function Desktop() {
     { appId: "soulreader", glyph: "✉", label: "Soulreader" },
     { appId: "armory", glyph: "⚔", label: "Armory" },
     { appId: "terminal", glyph: "▢", label: "Hellfire" },
-    { appId: "oracle", glyph: "✦", label: "Oracle" },
+    { appId: "shadows", glyph: "✦", label: "Shadows" },
     { appId: "cipher", glyph: "⛧", label: "Cipher Cellar" },
     { appId: "seal", glyph: "⛓", label: "Seal Breaker" },
     { appId: "sigil", glyph: "⌬", label: "Sigil Reader" },
@@ -103,8 +103,8 @@ export function Desktop() {
         </Window>
       ))}
 
-      {/* Oracle desktop pet — VRM avatar pinned to the bottom-right.
-          Clicking her body opens the Oracle chat window. The two control
+      {/* Shadows desktop pet — VRM avatar pinned to the bottom-right.
+          Clicking her body opens the Shadows chat window. The two control
           buttons in the top-right corner of the pet handle expand/banish
           without triggering the chat click. */}
       {!petHidden && (
@@ -121,11 +121,11 @@ export function Desktop() {
               underneath can absorb the click. cursor-pointer + group hover
               makes the chat hint glow. */}
           <button
-            onClick={() => restoreOrFocus("oracle")}
+            onClick={() => restoreOrFocus("shadows")}
             className="group absolute inset-0 cursor-pointer bg-transparent border-0 outline-none"
             style={{ zIndex: 2 }}
-            title="Click to chat with Oracle"
-            aria-label="Open Oracle chat"
+            title="Click to chat with Shadows"
+            aria-label="Open Shadows chat"
           >
             <span
               className="absolute -top-1 left-2 text-[10px] mono px-2 py-1 rounded-full bg-dsos-flame/30 border border-dsos-flame/60 text-dsos-flame backdrop-blur group-hover:bg-dsos-flame/50 group-hover:text-white transition-colors"
@@ -146,7 +146,7 @@ export function Desktop() {
                 window.open("?mode=companion", "_blank");
               }}
               className="text-[10px] mono px-2 py-0.5 rounded border border-dsos-flame/40 bg-black/60 text-dsos-bone hover:text-dsos-flame backdrop-blur"
-              title="Open Oracle in floating companion window"
+              title="Open Shadows in floating companion window"
             >
               ⤢
             </button>
@@ -156,7 +156,7 @@ export function Desktop() {
                 setPetHidden(true);
               }}
               className="text-[10px] mono px-2 py-0.5 rounded border border-dsos-ghost/40 bg-black/60 text-dsos-ghost hover:text-dsos-flame backdrop-blur"
-              title="Banish Oracle"
+              title="Banish Shadows"
             >
               ✕
             </button>
@@ -168,9 +168,9 @@ export function Desktop() {
         <button
           onClick={() => setPetHidden(false)}
           className="absolute right-4 bottom-20 z-0 text-[10px] mono px-3 py-1 rounded border border-dsos-flame/40 bg-black/60 text-dsos-bone hover:text-dsos-flame backdrop-blur"
-          title="Summon Oracle"
+          title="Summon Shadows"
         >
-          ✦ summon oracle
+          ✦ summon shadows
         </button>
       )}
 

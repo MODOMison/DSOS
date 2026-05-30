@@ -12,7 +12,7 @@ const appsInLauncher: AppId[] = [
   "soulreader",
   "armory",
   "terminal",
-  "oracle",
+  "shadows",
   "about",
 ];
 
@@ -23,7 +23,7 @@ const appGlyphs: Record<AppId, string> = {
   soulreader: "✉",
   armory: "⚔",
   terminal: "▢",
-  oracle: "✦",
+  shadows: "✦",
   about: "ⓘ",
   account: "⚲",
   pricing: "$",

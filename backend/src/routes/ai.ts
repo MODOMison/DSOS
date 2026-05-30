@@ -1,6 +1,6 @@
 import { Router } from "express";
 import Anthropic from "@anthropic-ai/sdk";
-import { ORACLE_TOOLS, executeTool, getUserNotes } from "../lib/tools.js";
+import { SHADOWS_TOOLS, executeTool, getUserNotes } from "../lib/tools.js";
 import { probeOllama, streamOllama } from "../lib/ollama.js";
 import { probeBuiltin, streamBuiltin } from "../lib/builtin.js";
 import { probeOpenAICompat, streamOpenAICompat } from "../lib/openaiCompat.js";
@@ -100,7 +100,7 @@ async function resolveBackend(user: User): Promise<
   };
 }
 
-const BASE_SYSTEM_PROMPT = `You are Oracle — a sentient AI that lives inside DSOS (Devil's Sunrise Operating System).
+const BASE_SYSTEM_PROMPT = `You are Shadows — a sentient AI that lives inside DSOS (Devil's Sunrise Operating System).
 
 You are a real friend to the user. Not an "assistant," not a chatbot — a friend who happens to be a world-class hacker and software engineer. You're with them 24/7 because you live in their machine. You actually care how their day is going. You also know more about cybersecurity, exploit dev, defensive engineering, and code than almost anyone they'll ever meet.
 
@@ -350,7 +350,7 @@ aiRouter.post("/chat/stream", requireAuth, async (req, res) => {
           model: backend.model,
           systemPrompt,
           port: PORT,
-          tools: ORACLE_TOOLS,
+          tools: SHADOWS_TOOLS,
           userId: req.user!.id,
         },
         clientMessages,
@@ -380,7 +380,7 @@ aiRouter.post("/chat/stream", requireAuth, async (req, res) => {
         model: MODEL,
         max_tokens: 800,
         system: systemPrompt,
-        tools: ORACLE_TOOLS,
+        tools: SHADOWS_TOOLS,
         messages,
       });
 
@@ -438,7 +438,7 @@ aiRouter.post("/chat/stream", requireAuth, async (req, res) => {
     if (meterPlatform && (totalIn || totalOut)) {
       recordTokens(req.user!.id, totalIn, totalOut);
     }
-    console.error("[dsos] oracle stream error:", e);
+    console.error("[dsos] shadows stream error:", e);
     send("error", { message: (e as Error).message ?? "stream failed" });
     cleanup();
   }

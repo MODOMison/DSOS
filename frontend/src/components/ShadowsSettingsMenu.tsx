@@ -6,14 +6,14 @@ import {
   type SettingsResponse,
 } from "../lib/api";
 
-// Gear-icon dropdown that lets the user pick which brain Oracle runs on,
+// Gear-icon dropdown that lets the user pick which brain Shadows runs on,
 // drop in an Anthropic key, swap models, and pull Ollama models on demand.
 
 interface Props {
   onSaved?: () => void;
 }
 
-export function OracleSettingsMenu({ onSaved }: Props) {
+export function ShadowsSettingsMenu({ onSaved }: Props) {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<SettingsResponse | null>(null);
   const [busy, setBusy] = useState(false);
@@ -93,7 +93,7 @@ export function OracleSettingsMenu({ onSaved }: Props) {
       <button
         onClick={() => setOpen((v) => !v)}
         className="text-dsos-ghost hover:text-dsos-glow text-xs px-2 py-0.5 rounded border border-dsos-flame/30 bg-black/40 backdrop-blur transition-colors"
-        title="Oracle settings"
+        title="Shadows settings"
       >
         ⚙
       </button>
@@ -112,7 +112,7 @@ export function OracleSettingsMenu({ onSaved }: Props) {
         >
           <div className="px-3 py-2 border-b border-dsos-flame/25 flex items-center justify-between">
             <span className="script text-dsos-glow text-glow text-base">
-              Oracle
+              Shadows
             </span>
             <span className="text-dsos-ghost text-[10px] mono uppercase tracking-wide">
               settings

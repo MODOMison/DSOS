@@ -17,7 +17,7 @@ body,
   overflow: hidden;
 }
 
-/* Companion (floating Oracle) window — Electron paints the host desktop
+/* Companion (floating Shadows) window — Electron paints the host desktop
    through any transparent area, so kill the gradient. */
 html.companion-mode,
 body.companion-mode,
@@ -112,22 +112,22 @@ body {
   box-shadow: 0 0 0 2px rgba(255, 74, 31, 0.2);
 }
 
-/* Markdown rendering inside Oracle messages. Scoped so it doesn't bleed. */
-.prose-oracle p {
+/* Markdown rendering inside Shadows messages. Scoped so it doesn't bleed. */
+.prose-shadows p {
   margin: 0 0 0.5em 0;
   line-height: 1.5;
 }
-.prose-oracle p:last-child {
+.prose-shadows p:last-child {
   margin-bottom: 0;
 }
-.prose-oracle strong {
+.prose-shadows strong {
   color: #ffb86a;
   font-weight: 600;
 }
-.prose-oracle em {
+.prose-shadows em {
   color: #f4ead4;
 }
-.prose-oracle code {
+.prose-shadows code {
   font-family: theme("fontFamily.mono");
   background: rgba(255, 138, 42, 0.12);
   color: #ffb86a;
@@ -135,7 +135,7 @@ body {
   border-radius: 3px;
   font-size: 0.92em;
 }
-.prose-oracle pre {
+.prose-shadows pre {
   background: rgba(0, 0, 0, 0.55);
   border: 1px solid rgba(255, 138, 42, 0.2);
   border-radius: 4px;
@@ -144,63 +144,63 @@ body {
   overflow-x: auto;
   font-size: 11px;
 }
-.prose-oracle pre code {
+.prose-shadows pre code {
   background: transparent;
   color: #f4ead4;
   padding: 0;
 }
-.prose-oracle ul,
-.prose-oracle ol {
+.prose-shadows ul,
+.prose-shadows ol {
   margin: 0.25em 0 0.5em 0;
   padding-left: 1.25em;
 }
-.prose-oracle ul {
+.prose-shadows ul {
   list-style: disc;
 }
-.prose-oracle ol {
+.prose-shadows ol {
   list-style: decimal;
 }
-.prose-oracle li {
+.prose-shadows li {
   margin: 0.15em 0;
 }
-.prose-oracle h1,
-.prose-oracle h2,
-.prose-oracle h3,
-.prose-oracle h4 {
+.prose-shadows h1,
+.prose-shadows h2,
+.prose-shadows h3,
+.prose-shadows h4 {
   color: #ffb86a;
   font-weight: 600;
   margin: 0.6em 0 0.3em 0;
   line-height: 1.2;
 }
-.prose-oracle h1 { font-size: 1.15em; }
-.prose-oracle h2 { font-size: 1.08em; }
-.prose-oracle h3, .prose-oracle h4 { font-size: 1em; }
-.prose-oracle a {
+.prose-shadows h1 { font-size: 1.15em; }
+.prose-shadows h2 { font-size: 1.08em; }
+.prose-shadows h3, .prose-shadows h4 { font-size: 1em; }
+.prose-shadows a {
   color: #ff8a2a;
   text-decoration: underline;
 }
-.prose-oracle a:hover {
+.prose-shadows a:hover {
   color: #ffb86a;
 }
-.prose-oracle blockquote {
+.prose-shadows blockquote {
   border-left: 2px solid rgba(255, 138, 42, 0.5);
   padding-left: 0.6em;
   margin: 0.4em 0;
   color: #d6c8a8;
   font-style: italic;
 }
-.prose-oracle table {
+.prose-shadows table {
   border-collapse: collapse;
   margin: 0.5em 0;
   font-size: 11px;
 }
-.prose-oracle th,
-.prose-oracle td {
+.prose-shadows th,
+.prose-shadows td {
   border: 1px solid rgba(255, 138, 42, 0.25);
   padding: 3px 6px;
   text-align: left;
 }
-.prose-oracle th {
+.prose-shadows th {
   background: rgba(255, 138, 42, 0.1);
   color: #ffb86a;
 }

@@ -63,7 +63,7 @@ export function Pricing() {
             "Recon (DNS, headers, TLS, subdomains, WHOIS)",
             "Hash identifier",
             "150 scans / month",
-            "BYO Anthropic key required for Oracle",
+            "BYO Anthropic key required for Shadows",
           ]}
           highlight={!isPro}
           tag={!isPro ? "CURRENT" : undefined}
@@ -76,7 +76,7 @@ export function Pricing() {
             "Everything in Free",
             "CVE search, breach check, phish analyzer",
             "Unlimited scans",
-            "500k Oracle tokens/month included",
+            "500k Shadows tokens/month included",
             "Still bring your own key any time",
           ]}
           highlight={isPro}

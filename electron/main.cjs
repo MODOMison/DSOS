@@ -1,7 +1,7 @@
 // DSOS Electron main process.
 // - Spawns one full-desktop window (the existing DSOS SPA).
 // - Spawns one frameless, transparent, always-on-top Companion window
-//   that renders just Oracle. Toggle with Ctrl+Shift+O.
+//   that renders just Shadows. Toggle with Ctrl+Shift+O.
 //
 // Dev mode points both windows at the Vite dev server on :5173.
 // Backend (Express on :4000) is expected to be running separately —
@@ -67,7 +67,7 @@ function createCompanionWindow() {
     resizable: true,
     skipTaskbar: false,
     backgroundColor: "#00000000",
-    title: "Oracle",
+    title: "Shadows",
     show: false,
     webPreferences: {
       preload: path.join(__dirname, "preload.cjs"),

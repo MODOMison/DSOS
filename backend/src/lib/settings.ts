@@ -6,7 +6,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-export interface OracleSettings {
+export interface ShadowsSettings {
   // "anthropic" | "builtin" | "ollama" | "openai-compat" | "auto"
   //   auto: prefer anthropic-key → builtin (if a .gguf is in backend/models/)
   //         → ollama (if reachable). openai-compat is never auto-selected.
@@ -25,7 +25,7 @@ export interface OracleSettings {
   openaiCompatKey: string;
 }
 
-export const DEFAULT_SETTINGS: OracleSettings = {
+export const DEFAULT_SETTINGS: ShadowsSettings = {
   backend: "auto",
   anthropicKey: "",
   anthropicModel: "claude-haiku-4-5",
@@ -91,11 +91,11 @@ export const OLLAMA_MODELS = [
 
 const SETTINGS_PATH = path.join(process.cwd(), "settings.json");
 
-let cache: OracleSettings | null = null;
+let cache: ShadowsSettings | null = null;
 
-export async function loadSettings(): Promise<OracleSettings> {
+export async function loadSettings(): Promise<ShadowsSettings> {
   if (cache) return cache;
-  let next: OracleSettings;
+  let next: ShadowsSettings;
   try {
     const text = await fs.readFile(SETTINGS_PATH, "utf8");
     next = { ...DEFAULT_SETTINGS, ...JSON.parse(text) };
@@ -114,10 +114,10 @@ export async function loadSettings(): Promise<OracleSettings> {
 }
 
 export async function saveSettings(
-  next: Partial<OracleSettings>
-): Promise<OracleSettings> {
+  next: Partial<ShadowsSettings>
+): Promise<ShadowsSettings> {
   const current = await loadSettings();
-  const merged: OracleSettings = { ...current, ...next };
+  const merged: ShadowsSettings = { ...current, ...next };
   cache = merged;
   await fs.writeFile(SETTINGS_PATH, JSON.stringify(merged, null, 2));
   return merged;

@@ -82,7 +82,7 @@ Tier legend: 🆓 free · ⭐ Pro · 🏆 Pro+ (future team tier)
     groups by attacker, generates IOCs.
     Effort: M · *Why pay:* SOC analyst superpower.
 
-19. **🆓 CTF Oracle** — paste a CTF challenge description, AI gives progressively bigger hints
+19. **🆓 CTF Shadows** — paste a CTF challenge description, AI gives progressively bigger hints
     (level 1 nudge → level 3 walkthrough) so people don't get full spoilers.
     Effort: S · *Why pay:* student stickiness; teaches scoping prompts.
 

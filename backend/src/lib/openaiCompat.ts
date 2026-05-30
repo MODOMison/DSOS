@@ -1,4 +1,4 @@
-// OpenAI-compatible backend for Oracle.
+// OpenAI-compatible backend for Shadows.
 // Works with text-generation-webui (--api --extensions openai), vLLM,
 // LM Studio's local server, llama-cpp-server, KoboldCPP, and anything else
 // that speaks /v1/chat/completions with SSE streaming.

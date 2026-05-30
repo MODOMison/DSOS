@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { api, type OracleEvent } from "../lib/api";
+import { api, type ShadowsEvent } from "../lib/api";
 import { useCharacter } from "../store/characterStore";
 import { useAuthStore } from "../store/authStore";
-import { OracleSettingsMenu } from "../components/OracleSettingsMenu";
+import { ShadowsSettingsMenu } from "../components/ShadowsSettingsMenu";
 
 function greetingFor(hour: number, name?: string): string {
   const who = name ? `, ${name}` : "";
@@ -59,7 +59,7 @@ interface ToolCall {
   preview?: string;
 }
 
-export function OracleAI() {
+export function ShadowsAI() {
   const [status, setStatus] = useState<{
     available: boolean;
     reason?: string;
@@ -119,7 +119,7 @@ export function OracleAI() {
     try {
       await api.ai.stream(
         history,
-        (e: OracleEvent) => {
+        (e: ShadowsEvent) => {
           // Dispatch character reactions on every event.
           const c = useCharacter.getState();
           switch (e.type) {
@@ -199,7 +199,7 @@ export function OracleAI() {
     <div className="flex-1 flex flex-col min-h-0 relative">
       {/* Settings gear, top-right of the chat area */}
       <div className="absolute top-2 right-2 z-10">
-        <OracleSettingsMenu
+        <ShadowsSettingsMenu
           onSaved={() =>
             api.ai
               .status()
@@ -212,11 +212,11 @@ export function OracleAI() {
       {status && !status.available && (
         <div className="m-3 glass rounded-md p-3 text-xs text-dsos-bone border border-dsos-flame/30">
           <div className="script text-lg text-dsos-glow text-glow mb-1">
-            Oracle is dormant
+            Shadows is dormant
           </div>
           <div className="text-dsos-ghost mb-2">{status.reason}</div>
           <div className="text-dsos-ghost text-[11px] leading-relaxed">
-            <strong className="text-dsos-bone">To wake Oracle:</strong>
+            <strong className="text-dsos-bone">To wake Shadows:</strong>
             <ol className="list-decimal ml-4 mt-1 space-y-0.5">
               <li>
                 Sign up at{" "}
@@ -254,7 +254,7 @@ export function OracleAI() {
         ref={scrollRef}
         className="flex-1 overflow-y-auto dsos-scrollbar p-3 space-y-2 text-sm"
       >
-        {turns.length === 0 && status?.available && <OracleGreeting status={status} />}
+        {turns.length === 0 && status?.available && <ShadowsGreeting status={status} />}
         {turns.map((t, i) =>
           t.kind === "user" ? (
             <div
@@ -270,7 +270,7 @@ export function OracleAI() {
               className="rounded-md p-2 bg-black/40 text-dsos-bone mr-6 border border-dsos-flame/20"
             >
               <div className="text-[10px] mono text-dsos-ghost mb-0.5">
-                oracle
+                shadows
               </div>
               {t.tools.length > 0 && (
                 <div className="mb-2 space-y-1">
@@ -280,14 +280,14 @@ export function OracleAI() {
                 </div>
               )}
               {t.text ? (
-                <div className="prose-oracle text-[12px]">
+                <div className="prose-shadows text-[12px]">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {t.text}
                   </ReactMarkdown>
                 </div>
               ) : !t.done ? (
                 <div className="text-dsos-glow text-xs animate-pulse">
-                  oracle is divining...
+                  shadows is divining...
                 </div>
               ) : null}
             </div>
@@ -307,8 +307,8 @@ export function OracleAI() {
           className="input-ember text-xs"
           placeholder={
             status?.available
-              ? "ask oracle... (it can call DSOS tools)"
-              : "oracle is dormant — see panel above"
+              ? "ask shadows... (it can call DSOS tools)"
+              : "shadows is dormant — see panel above"
           }
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -332,7 +332,7 @@ export function OracleAI() {
   );
 }
 
-interface OracleStatus {
+interface ShadowsStatus {
   available: boolean;
   reason?: string;
   model?: string;
@@ -340,7 +340,7 @@ interface OracleStatus {
   modelInstalled?: boolean;
 }
 
-function OracleGreeting({ status }: { status: OracleStatus }) {
+function ShadowsGreeting({ status }: { status: ShadowsStatus }) {
   const user = useAuthStore((s) => s.user);
   // Pull a display name out of the email local-part if we don't have a real one.
   const displayName = useMemo(() => {

@@ -29,7 +29,7 @@ working tool.
   injection, XXE. Each payload comes with how it works **and** how to defend.
 - **Hellfire Terminal** — text command line that wraps every other tool
   (`recon dns example.com`, `cve log4j`, `hash <str>`, `breach <pw>`).
-- **Oracle** — AI sidebar that wakes up when you add an Anthropic API key. Off
+- **Shadows** — AI sidebar that wakes up when you add an Anthropic API key. Off
   by default; the rest of DSOS works without it.
 
 ---
@@ -55,9 +55,9 @@ npm run dev:frontend    # tab 2
 
 ---
 
-## Built-in local LLM (Oracle without an API key)
+## Built-in local LLM (Shadows without an API key)
 
-The Oracle defaults to a **built-in** backend that runs MythoMax-L2-13B
+Shadows defaults to a **built-in** backend that runs MythoMax-L2-13B
 locally via `node-llama-cpp` — no Anthropic key, no Ollama, no internet
 needed at chat time. The model file (~7.4 GB) is gitignored, so a fresh
 clone has to pull it once:
@@ -75,7 +75,7 @@ bash backend/scripts/download-model.sh
 The script downloads `mythomax-l2-13b.Q4_K_M.gguf` from
 [TheBloke/MythoMax-L2-13B-GGUF](https://huggingface.co/TheBloke/MythoMax-L2-13B-GGUF)
 into `backend/models/`. After it finishes, `npm run dev` and chat with
-the Oracle — the first message takes ~20-30s to load 7 GB of weights
+Shadows — the first message takes ~20-30s to load 7 GB of weights
 into RAM, then replies stream normally.
 
 > Inference runs in a child process (`backend/src/lib/builtinWorker.mjs`)
@@ -90,20 +90,20 @@ into RAM, then replies stream normally.
 
 ---
 
-## Accounts, tiers, and the Oracle
+## Accounts, tiers, and Shadows
 
 DSOS now requires a (free) account on first run. On boot you'll see the sign-in
 screen — create an account, you'll land on the desktop on the **Free** tier:
 
-- Free: Inferno Recon + Brimstone hash tool, 150 scans/month, BYO Anthropic key required for Oracle.
-- Pro ($19/mo): everything in Free + CVE Oracle + Soulreader phish analyzer + breach lookups, unlimited scans, 500k Oracle tokens/month included.
+- Free: Inferno Recon + Brimstone hash tool, 150 scans/month, BYO Anthropic key required for Shadows.
+- Pro ($19/mo): everything in Free + CVE Oracle + Soulreader phish analyzer + breach lookups, unlimited scans, 500k Shadows tokens/month included.
 
 Open the **Account** window to manage your subscription or paste your own
 Anthropic key. Open **Pricing** to upgrade.
 
 ### Bring your own Anthropic key
 
-Cheapest way to use the Oracle is to paste your own key in the Account window
+Cheapest way to use Shadows is to paste your own key in the Account window
 (get one at [console.anthropic.com](https://console.anthropic.com)). It's stored
 on your local DSOS server and never leaves it. Saved keys skip the Pro token
 quota entirely.
@@ -143,7 +143,7 @@ the rest of DSOS still runs — only the Upgrade / Manage Billing buttons error.
 6. **Test the flow:** in the app open Pricing → Upgrade. Use Stripe test card
    `4242 4242 4242 4242`, any future expiry, any CVC. After checkout you bounce
    back to DSOS and your tier flips to Pro.
-7. **(Optional) Platform Oracle key:** set `PLATFORM_ANTHROPIC_KEY=sk-ant-...`
+7. **(Optional) Platform Shadows key:** set `PLATFORM_ANTHROPIC_KEY=sk-ant-...`
    to power Pro users who don't BYO a key. Leave blank to require BYO.
 
 **Optional but recommended:** also grab a free
@@ -166,7 +166,7 @@ dsos/
 │   │   ├── theme/            Logo (SVG), DesktopBackground
 │   │   ├── store/            Zustand window manager
 │   │   ├── apps/             InfernoRecon, CVEOracle, Brimstone, Soulreader,
-│   │   │                     Armory, HellfireTerminal, OracleAI, About
+│   │   │                     Armory, HellfireTerminal, ShadowsAI, About
 │   │   └── lib/api.ts        backend client
 └── backend/                  Express + TypeScript (tsx for dev)
     └── src/
@@ -186,7 +186,7 @@ dsos/
   - [NVD 2.0](https://services.nvd.nist.gov/rest/json/cves/2.0) — CVE database
   - [HaveIBeenPwned Pwned Passwords](https://api.pwnedpasswords.com) — breach
     lookup via k-anonymity (no email, no PII leaves your machine)
-- **Optional:** Anthropic Claude (for the Oracle AI panel).
+- **Optional:** Anthropic Claude (for the Shadows AI panel).
 
 ---
 

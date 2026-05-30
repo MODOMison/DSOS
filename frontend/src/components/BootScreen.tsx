@@ -12,7 +12,7 @@ const bootLines = [
   "[ ok ] forging payload armory ...",
   "[ ok ] summoning soulreader ...",
   "[ ok ] linking brimstone hash engine ...",
-  "[ warn ] oracle ai panel: waiting for api key ...",
+  "[ warn ] shadows ai panel: waiting for api key ...",
   "[ ok ] desktop shell ready.",
   "",
   "welcome to DSOS — devil's sunrise operating system.",

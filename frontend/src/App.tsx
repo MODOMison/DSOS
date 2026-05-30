@@ -49,8 +49,6 @@ function FullDesktop() {
       open("pricing");
       // strip the query so a reload doesn't keep reopening it
       window.history.replaceState({}, "", window.location.pathname);
-    } else {
-      open("about");
     }
   }, [booted, billing, open]);
 

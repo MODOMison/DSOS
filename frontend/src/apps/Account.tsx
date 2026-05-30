@@ -131,7 +131,7 @@ export function Account() {
           BRING YOUR OWN ANTHROPIC KEY
         </div>
         <div className="text-xs text-dsos-bone/70">
-          Saved here, used for all Oracle calls. Skips platform quota.{" "}
+          Saved here, used for all Shadows calls. Skips platform quota.{" "}
           {keyMasked && <span className="text-dsos-flame">{keyMasked}</span>}
         </div>
         <div className="flex gap-2">

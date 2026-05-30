@@ -1,4 +1,4 @@
-// Tool definitions + executor for Oracle's agent loop.
+// Tool definitions + executor for Shadows's agent loop.
 // Most tools wrap a DSOS /api route via loopback. The memory_* tools talk
 // to the DB directly because they need per-user scoping.
 
@@ -6,7 +6,7 @@ import type Anthropic from "@anthropic-ai/sdk";
 import { eq } from "drizzle-orm";
 import { db, schema } from "../db/index.js";
 
-export const ORACLE_TOOLS: Anthropic.Tool[] = [
+export const SHADOWS_TOOLS: Anthropic.Tool[] = [
   {
     name: "recon_dns",
     description:
@@ -172,7 +172,7 @@ export const ORACLE_TOOLS: Anthropic.Tool[] = [
 
 export function getUserNotes(userId: string): string | null {
   const [row] = db
-    .select({ notes: schema.users.oracleNotes })
+    .select({ notes: schema.users.shadowsNotes })
     .from(schema.users)
     .where(eq(schema.users.id, userId))
     .all();
@@ -187,11 +187,11 @@ function appendUserNote(userId: string, note: string) {
   const merged = current ? `${current}\n- (${stamp}) ${trimmed}` : `- (${stamp}) ${trimmed}`;
   // Cap total memory to keep prompts cheap (~4 KB).
   const capped = merged.length > 4000 ? merged.slice(merged.length - 4000) : merged;
-  db.update(schema.users).set({ oracleNotes: capped }).where(eq(schema.users.id, userId)).run();
+  db.update(schema.users).set({ shadowsNotes: capped }).where(eq(schema.users.id, userId)).run();
 }
 
 function clearUserNotes(userId: string) {
-  db.update(schema.users).set({ oracleNotes: null }).where(eq(schema.users.id, userId)).run();
+  db.update(schema.users).set({ shadowsNotes: null }).where(eq(schema.users.id, userId)).run();
 }
 
 type ToolInput = Record<string, unknown>;
@@ -275,7 +275,7 @@ export async function executeTool(
     // context window or trigger compaction prematurely.
     const capped =
       text.length > 16000
-        ? text.slice(0, 16000) + '\n... [truncated by Oracle tool runner]'
+        ? text.slice(0, 16000) + '\n... [truncated by Shadows tool runner]'
         : text;
     return { ok: r.ok, output: capped };
   } catch (e) {

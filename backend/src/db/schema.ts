@@ -7,7 +7,11 @@ export const users = sqliteTable("users", {
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   stripeCustomerId: text("stripe_customer_id"),
   byoAnthropicKey: text("byo_anthropic_key"),
-  oracleNotes: text("oracle_notes"),
+  // JS field is shadowsNotes (renamed from oracleNotes for the Shadows
+  // rebrand), but the DB column stays "oracle_notes" — renaming the column
+  // would require a SQLite migration that loses no-downtime safety and
+  // there's no user value in changing the column name.
+  shadowsNotes: text("oracle_notes"),
 });
 
 export const sessions = sqliteTable("sessions", {

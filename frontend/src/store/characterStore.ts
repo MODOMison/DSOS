@@ -7,13 +7,14 @@ import {
   RARE_DANCE_VARIANTS,
   LIFE_VARIANTS,
   IDLE_VARIANTS,
+  GREETING_VARIANTS,
   randomFrom,
   weightedPick,
   type AnimationName,
 } from "../lib/bvhLoader";
 
 // Central character state — read each frame by VrmCharacter, written by:
-//   - OracleAI (chat lifecycle events drive mood + speaking + clip triggers)
+//   - ShadowsAI (chat lifecycle events drive mood + speaking + clip triggers)
 //   - VrmCharacter itself (when a one-shot clip finishes, clears it)
 //   - Future: TTS engine drives mouthAmplitude
 
@@ -69,7 +70,7 @@ interface CharacterStore {
   playClip: (name: AnimationName, mode?: ClipMode) => void;
   clipFinished: (name: AnimationName, startedAt: number) => void;
 
-  // Chat lifecycle hooks (called by OracleAI)
+  // Chat lifecycle hooks (called by ShadowsAI)
   onSend: () => void;
   onToolStart: () => void;
   onToolEnd: () => void;
@@ -163,8 +164,7 @@ export const useCharacter = create<CharacterStore>((set, get) => ({
 
   onSend: () => {
     set({ mood: "happy", lastActivity: Date.now() });
-    const { banned } = get();
-    if (!banned.has("greeting")) get().playClip("greeting", "once");
+    get().playClip(pickAllowed(GREETING_VARIANTS, get().banned), "once");
   },
   onToolStart: () => {
     set({ mood: "thinking", lastActivity: Date.now() });
@@ -231,6 +231,6 @@ export function idleClipForPose(pose: Pose): AnimationName {
       return "laying_idle";
     case "standing":
     default:
-      return "neutral_idle";
+      return "male_idle_2";
   }
 }

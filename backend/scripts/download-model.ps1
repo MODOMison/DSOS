@@ -2,7 +2,7 @@
 #
 # Pulls MythoMax-L2-13B Q4_K_M (~7.4 GB) from Hugging Face into backend/models/.
 # That file is gitignored — every fresh clone needs to run this once before
-# the built-in Oracle backend will work.
+# the built-in Shadows backend will work.
 #
 # Run from anywhere:
 #   pwsh backend\scripts\download-model.ps1
@@ -55,4 +55,4 @@ if ($curl) {
 $sizeGB = [math]::Round((Get-Item $dest).Length / 1GB, 2)
 Write-Host ""
 Write-Host "[done] $fileName downloaded ($sizeGB GB)" -ForegroundColor Green
-Write-Host "       Built-in Oracle backend should now work after npm run dev."
+Write-Host "       Built-in Shadows backend should now work after npm run dev."

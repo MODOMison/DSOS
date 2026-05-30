@@ -1,4 +1,4 @@
-// Built-in GGUF backend for Oracle.
+// Built-in GGUF backend for Shadows.
 //
 // Loads a local GGUF model file into a CHILD PROCESS via node-llama-cpp.
 // User drops a .gguf file into backend/models/ and we auto-pick it (or pin

@@ -18,14 +18,17 @@ import {
 import {
   animationUrl,
   loadBvhClip,
+  THINKING_VARIANTS,
   type AnimationName,
 } from "../lib/bvhLoader";
+import { loadFbxClip } from "../lib/fbxLoader";
 
 // Pose-specific body data is no longer driven procedurally — BVH clips
 // take over once they load. See store/characterStore.ts for idleClipForPose
 // which maps poses to looping idle clips (sit_idle, kneel_idle, etc.).
 // Initial arm A-pose (set at load time before clips arrive) is applied
 // inline in the GLTFLoader callback below.
+
 
 // Loads a .vrm file and exposes the parsed VRM object. Falls back to a friendly
 // "model missing" state so the integration ships even if the user hasn't
@@ -79,11 +82,11 @@ function useVRM(url: string): {
         };
         // arms DOWN at sides — sign convention: left arm extends along +X in
         // T-pose, negative Z rotation drops it; right arm is mirrored.
-        setBoneRot(VRMHumanBoneName.LeftUpperArm, 0, 0, -1.3);
-        setBoneRot(VRMHumanBoneName.RightUpperArm, 0, 0, 1.3);
+        setBoneRot(VRMHumanBoneName.LeftUpperArm, 0, 0, 1.3);
+        setBoneRot(VRMHumanBoneName.RightUpperArm, 0, 0, -1.3);
         // very slight elbow bend forward (x axis) for a relaxed posture
-        setBoneRot(VRMHumanBoneName.LeftLowerArm, 0.15, 0, 0);
-        setBoneRot(VRMHumanBoneName.RightLowerArm, 0.15, 0, 0);
+        setBoneRot(VRMHumanBoneName.LeftLowerArm, -0.15, 0, 0);
+        setBoneRot(VRMHumanBoneName.RightLowerArm, -0.15, 0, 0);
         // hands hang naturally
         setBoneRot(VRMHumanBoneName.LeftHand, 0, 0, 0);
         setBoneRot(VRMHumanBoneName.RightHand, 0, 0, 0);
@@ -111,15 +114,15 @@ function useVRM(url: string): {
         if (sbm) {
           let n = 0;
           sbm.joints.forEach((joint) => {
-            joint.settings.gravityPower = 1.0;
-            joint.settings.stiffness = 0.35;
-            joint.settings.dragForce = 0.55;
+            joint.settings.gravityPower = 0.7;
+            joint.settings.stiffness = 0.75;
+            joint.settings.dragForce = 0.75;
             n++;
           });
-          console.log(`[Oracle VRM] tuned ${n} spring-bone joints`);
+          console.log(`[Shadows VRM] tuned ${n} spring-bone joints`);
         } else {
           console.warn(
-            "[Oracle VRM] no spring bones — hair will not animate. Re-export from VRoid Studio with spring bones enabled."
+            "[Shadows VRM] no spring bones — hair will not animate. Re-export from VRoid Studio with spring bones enabled."
           );
         }
 
@@ -184,16 +187,67 @@ function Character({ url, mouthOpenRef, expressionRef }: CharacterProps) {
     ((e: { action: THREE.AnimationAction }) => void) | null
   >(null);
 
-  // Once the VRM is ready, init the mixer and kick off the default idle.
+  // Once the VRM is ready, init the mixer and play the entrance sequence:
+  // walks in → opens a door → thinks → settles into the default idle.
   useEffect(() => {
     if (!vrm) return;
     const mixer = new THREE.AnimationMixer(vrm.scene);
     mixerRef.current = mixer;
 
-    const initialIdle = idleClipForPose(useCharacter.getState().pose);
-    playClipOnMixer(initialIdle, "loop", 0);
+    let cancelled = false;
+    const sleep = (ms: number) =>
+      new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+    async function playIntro() {
+      const thinkingPick =
+        THINKING_VARIANTS[Math.floor(Math.random() * THINKING_VARIANTS.length)];
+      // Per-step config:
+      //   mode: "loop"  → cycle the clip for the holdMs window
+      //          "once" → play exactly once at natural duration
+      //          "final" → loop forever, no advance
+      //   holdMs: only used when mode === "loop"; otherwise use clip.duration
+      const sequence: {
+        name: AnimationName;
+        mode: "loop" | "once" | "final";
+        holdMs?: number;
+      }[] = [
+        // Long walk-in past the ~5s boot screen — many stride cycles.
+        { name: "male_walking", mode: "loop", holdMs: 7000 },
+        // Door opens once, end-to-end. Looping plays it twice → wrong.
+        { name: "male_door_open", mode: "once" },
+        // One thinking gesture at natural length.
+        { name: thinkingPick, mode: "once" },
+        // Settle into the default resting idle for the rest of the session.
+        { name: idleClipForPose(useCharacter.getState().pose), mode: "final" },
+      ];
+
+      for (const step of sequence) {
+        if (cancelled || mixerRef.current !== mixer) return;
+        const url = animationUrl(step.name);
+        let clip: THREE.AnimationClip;
+        try {
+          clip = url.toLowerCase().endsWith(".fbx")
+            ? await loadFbxClip(url, vrm!)
+            : await loadBvhClip(url, vrm!);
+        } catch (e) {
+          console.warn(`[Shadows VRM] intro step '${step.name}' failed:`, e);
+          continue;
+        }
+        if (cancelled || mixerRef.current !== mixer) return;
+        const mixerMode = step.mode === "once" ? "once" : "loop";
+        playClipOnMixer(step.name, mixerMode, 250);
+        if (step.mode === "final") return;
+        const hold =
+          step.mode === "loop"
+            ? step.holdMs ?? clip.duration * 1000
+            : clip.duration * 1000;
+        await sleep(hold);
+      }
+    }
+    playIntro();
 
     return () => {
+      cancelled = true;
       mixer.stopAllAction();
       actionsRef.current.clear();
       currentActionRef.current = null;
@@ -246,15 +300,18 @@ function Character({ url, mouthOpenRef, expressionRef }: CharacterProps) {
     mode: "loop" | "once",
     fadeMs: number
   ) {
+    const url = animationUrl(name);
     const vrmInst = vrm;
     const mixer = mixerRef.current;
     if (!vrmInst || !mixer) return;
 
     let clip: THREE.AnimationClip;
     try {
-      clip = await loadBvhClip(animationUrl(name), vrmInst);
+      clip = url.toLowerCase().endsWith(".fbx")
+        ? await loadFbxClip(url, vrmInst)
+        : await loadBvhClip(url, vrmInst);
     } catch (e) {
-      console.warn(`[Oracle VRM] failed to load animation '${name}':`, e);
+      console.warn(`[Shadows VRM] failed to load animation '${name}':`, e);
       return;
     }
     // Bail if the mixer got torn down during the async load.

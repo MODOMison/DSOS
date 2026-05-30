@@ -1,4 +1,4 @@
-// Ollama backend for Oracle — speaks Ollama's /api/chat with tools, parses
+// Ollama backend for Shadows — speaks Ollama's /api/chat with tools, parses
 // the NDJSON stream, and emits our shared SSE event shape so the frontend
 // is identical regardless of which brain is running.
 //

@@ -152,279 +152,148 @@ export async function loadBvhClip(
 // Catalog of available clips. Keys are the friendly names we expose to the
 // rest of the app; values are the BVH filename under /animations/.
 export const ANIMATIONS = {
-  // Looping idles
-  neutral_idle: "neutral_idle.bvh",
-  neutral_idle2: "neutral_idle2.bvh",
-  sit_idle: "sit_idle.bvh",
-  sit_idle2: "sit_idle2.bvh",
-  kneel_idle: "kneel_idle.bvh",
-  laying_idle: "laying_idle.bvh",
-
-  // Emotion (one-shots)
-  joy: "joy.bvh",
-  joy2: "joy2.bvh",
-  joy3: "joy3.bvh",
-  sadness: "sadness.bvh",
-  sadness2: "sadness2.bvh",
-  anger: "anger.bvh",
-  surprise: "surprise.bvh",
-  curiosity: "curiosity.bvh",
-  confusion: "confusion.bvh",
-  approval: "approval.bvh",
-  approval2: "approval2.bvh",
-  disapproval: "disapproval.bvh",
-  embarrassment: "embarrassment.bvh",
-  excitement: "excitement.bvh",
-  excitement2: "excitement2.bvh",
-  fear: "fear.bvh",
-  realization: "realization.bvh",
-  relief: "relief.bvh",
-  pride: "pride.bvh",
-  amusement: "amusement.bvh",
-  amusement2: "amusement2.bvh",
-  amusement3: "amusement3.bvh",
-  caring: "caring.bvh",
-  neutral: "neutral.bvh",
-  gratitude: "gratitude.bvh",
-  optimism: "optimism.bvh",
-  admiration: "admiration.bvh",
-  nervousness: "nervousness.bvh",
-  remorse: "remorse.bvh",
-  disappointment: "disappointment.bvh",
-  annoyance: "annoyance.bvh",
-
-  // Actions (one-shots)
-  greeting: "action_greeting.bvh",
-  greeting2: "action_greeting1.bvh",
-  walk: "action_walk.bvh",
-  run: "action_run.bvh",
-  jog: "action_jog.bvh",
-  jump: "action_jump.bvh",
-  standup: "action_standup.bvh",
-  crouch: "action_crouch.bvh",
-  pickingup: "action_pickingup.bvh",
-  pat: "action_pat.bvh",
-  gaming: "action_gaming.bvh",
-  laydown: "action_laydown.bvh",
-  attention_seeking: "action_attention_seeking.bvh",
-
+  // ═══════ Male (Mixamo FBX) — Matt's Shadow rig ═══════
+  // Idles
+  male_idle: "Standing Idle 03.fbx",
+  male_idle_alt: "Idle.fbx",
+  male_idle_2: "Idle (1).fbx",
+  male_idle_bouncing: "Bouncing Fight Idle.fbx",
+  // Reactions / gestures
+  male_agreeing: "Agreeing.fbx",
+  male_dismissing: "Dismissing Gesture.fbx",
+  male_dismissing_2: "Dismissing Gesture (1).fbx",
+  male_pointing: "Pointing.fbx",
+  male_surprised: "Surprised.fbx",
+  male_thoughtful_shake: "Thoughtful Head Shake.fbx",
+  male_look_over_shoulder: "Look Over Shoulder.fbx",
+  male_telling_secret: "Telling A Secret.fbx",
+  // Greetings / formal
+  male_entry: "Entry.fbx",
+  male_salute: "Salute.fbx",
+  male_salute_2: "Salute (1).fbx",
+  // Work / thinking
+  male_searching_files: "Searching Files High.fbx",
+  male_button_pushing: "Button Pushing.fbx",
+  male_praying: "Praying.fbx",
+  male_praying_2: "Praying (1).fbx",
+  // Walks
+  male_walking: "Walking.fbx",
+  male_running: "Running.fbx",
+  male_walk_start: "Start Walking.fbx",
+  male_walk_start_2: "Start Walking (1).fbx",
+  male_walk_strut: "Strut Walking.fbx",
+  male_walk_strut_2: "Strut Walking (1).fbx",
+  male_walk_catwalk: "Catwalk Idle To Walk Forward.fbx",
+  male_side_step: "Short Left Side Step.fbx",
+  male_stand_to_cover: "Stand To Cover.fbx",
   // Dances
-  dance_1: "dance_1.bvh",
-  dance_2: "dance_2.bvh",
-  dance_dab: "dance_dab.bvh",
-  dance_gangnam: "dance_gangnam_style.bvh",
-  dance_rumba: "dance_rumba.bvh",
-  dance_headdrop: "dance_headdrop.bvh",
-  dance_marachinostep: "dance_marachinostep.bvh",
-  dance_northern_soul_spin: "dance_northern_soul_spin.bvh",
-  dance_ontop: "dance_ontop.bvh",
-  dance_pushback: "dance_pushback.bvh",
-  dance_backup: "dance_backup.bvh",
-
-  // CMU life (eating, drinking, domestic)
-
-  // CMU female-subject general (broad coverage from CMU subject #106)
-
-
-  // ═══════ Mixamo pack (converted by scripts/convert-mixamo-pack.cjs) ═══════
-  // 65 clips. License: Mixamo content (Adobe). See CREDITS.md.
-  mixamo_angry: "mixamo_angry.bvh",
-  mixamo_arms_hip_hop_dance: "mixamo_arms_hip_hop_dance.bvh",
-  mixamo_bellydancing: "mixamo_bellydancing.bvh",
-  mixamo_booty_hip_hop_dance: "mixamo_booty_hip_hop_dance.bvh",
-  mixamo_catwalk_walk_forward_highknees: "mixamo_catwalk_walk_forward_highknees.bvh",
-  mixamo_catwalk_walk_start_backwards_180l: "mixamo_catwalk_walk_start_backwards_180l.bvh",
-  mixamo_catwalk_walk: "mixamo_catwalk_walk.bvh",
-  mixamo_crazy_gesture: "mixamo_crazy_gesture.bvh",
-  mixamo_crying: "mixamo_crying.bvh",
-  mixamo_dancing_1: "mixamo_dancing_1.bvh",
-  mixamo_dancing: "mixamo_dancing.bvh",
-  mixamo_excited: "mixamo_excited.bvh",
-  mixamo_falling: "mixamo_falling.bvh",
-  mixamo_female_peek_and_aim: "mixamo_female_peek_and_aim.bvh",
-  mixamo_femme_peek_around_corner: "mixamo_femme_peek_around_corner.bvh",
-  mixamo_focus: "mixamo_focus.bvh",
-  mixamo_happy: "mixamo_happy.bvh",
-  mixamo_hip_hop_dancing_1: "mixamo_hip_hop_dancing_1.bvh",
-  mixamo_hip_hop_dancing_2: "mixamo_hip_hop_dancing_2.bvh",
-  mixamo_hip_hop_dancing_3: "mixamo_hip_hop_dancing_3.bvh",
-  mixamo_hip_hop_dancing_4: "mixamo_hip_hop_dancing_4.bvh",
-  mixamo_hip_hop_dancing_5: "mixamo_hip_hop_dancing_5.bvh",
-  mixamo_hip_hop_dancing_6: "mixamo_hip_hop_dancing_6.bvh",
-  mixamo_hip_hop_dancing_7: "mixamo_hip_hop_dancing_7.bvh",
-  mixamo_hip_hop_dancing_8: "mixamo_hip_hop_dancing_8.bvh",
-  mixamo_hip_hop_dancing: "mixamo_hip_hop_dancing.bvh",
-  mixamo_idle: "mixamo_idle.bvh",
-  mixamo_jazz_dancing: "mixamo_jazz_dancing.bvh",
-  mixamo_leaning_on_a_wall: "mixamo_leaning_on_a_wall.bvh",
-  mixamo_left_turn: "mixamo_left_turn.bvh",
-  mixamo_macarena_dance: "mixamo_macarena_dance.bvh",
-  mixamo_ninja_idle_1: "mixamo_ninja_idle_1.bvh",
-  mixamo_ninja_idle: "mixamo_ninja_idle.bvh",
-  mixamo_pacing_and_talking_on_a_phone: "mixamo_pacing_and_talking_on_a_phone.bvh",
-  mixamo_plotting: "mixamo_plotting.bvh",
-  mixamo_rejected: "mixamo_rejected.bvh",
-  mixamo_right_turn: "mixamo_right_turn.bvh",
-  mixamo_rumba_dancing: "mixamo_rumba_dancing.bvh",
-  mixamo_run: "mixamo_run.bvh",
-  mixamo_salsa_dancing: "mixamo_salsa_dancing.bvh",
-  mixamo_samba_dancing_1: "mixamo_samba_dancing_1.bvh",
-  mixamo_samba_dancing_2: "mixamo_samba_dancing_2.bvh",
-  mixamo_samba_dancing_3: "mixamo_samba_dancing_3.bvh",
-  mixamo_samba_dancing: "mixamo_samba_dancing.bvh",
-  mixamo_snake_hip_hop_dance: "mixamo_snake_hip_hop_dance.bvh",
-  mixamo_standing_greeting: "mixamo_standing_greeting.bvh",
-  mixamo_step_hip_hop_dance: "mixamo_step_hip_hop_dance.bvh",
-  mixamo_talking_1: "mixamo_talking_1.bvh",
-  mixamo_talking_on_phone: "mixamo_talking_on_phone.bvh",
-  mixamo_talking: "mixamo_talking.bvh",
-  mixamo_taunt: "mixamo_taunt.bvh",
-  mixamo_texting_and_walking: "mixamo_texting_and_walking.bvh",
-  mixamo_thankful: "mixamo_thankful.bvh",
-  mixamo_threatening: "mixamo_threatening.bvh",
-  mixamo_twist_dance: "mixamo_twist_dance.bvh",
-  mixamo_walk_in_circle: "mixamo_walk_in_circle.bvh",
-  mixamo_gangnam_style: "mixamo_gangnam_style.bvh",
-  mixamo_jump: "mixamo_jump.bvh",
-  mixamo_left_strafe_walking: "mixamo_left_strafe_walking.bvh",
-  mixamo_left_turn_90: "mixamo_left_turn_90.bvh",
-  mixamo_right_strafe_walking: "mixamo_right_strafe_walking.bvh",
-  mixamo_right_turn_90: "mixamo_right_turn_90.bvh",
-  mixamo_walking: "mixamo_walking.bvh",
+  male_dance_hiphop: "Hip Hop Dancing.fbx",
+  male_dance_hiphop_2: "Hip Hop Dancing (1).fbx",
+  male_dance_silly: "Silly Dancing.fbx",
+  // Life / hobbies
+  male_guitar: "Guitar Playing.fbx",
+  male_cards: "Cards.fbx",
+  male_texting: "Texting While Standing.fbx",
+  male_fishing: "Fishing Cast.fbx",
+  male_punching_bag: "Punching Bag.fbx",
+  male_shooting_arrow: "Shooting Arrow.fbx",
+  male_rifle: "Grab Rifle And Put Back.fbx",
+  male_door_open: "Opening Door Inwards.fbx",
+  male_door_open_2: "Opening Door Inwards (1).fbx",
 } as const;
 
 export type AnimationName = keyof typeof ANIMATIONS;
 
 export function animationUrl(name: AnimationName): string {
-  return `/animations/${ANIMATIONS[name]}`;
+  // Encode the filename so spaces, parens, and other special chars don't
+  // break the fetch (Mixamo FBX downloads frequently include "(1)" etc).
+  return `/animations/${encodeURIComponent(ANIMATIONS[name])}`;
 }
 
 // Curated random-pick helpers. CMU clips are weighted alongside the
-// originals so Oracle has the wide expressive range a real person does —
+// originals so Shadows has the wide expressive range a real person does —
 // most chats land on the common moves, but the rare/long clips still play.
 
 export const HAPPY_VARIANTS: AnimationName[] = [
-  "joy", "joy2", "joy3",
-  "approval", "approval2",
-  "amusement", "amusement2",
-  "excitement",
-  // ── Mixamo pack ──
-  "mixamo_excited",
-  "mixamo_happy",
-  "mixamo_thankful",
+  "male_agreeing",
+  "male_pointing",
+  "male_entry",
+  "male_salute",
 ];
 
 export const SAD_VARIANTS: AnimationName[] = [
-  "sadness", "sadness2",
-  "disappointment",
-  // ── Mixamo pack ──
-  "mixamo_angry",
-  "mixamo_crying",
-  "mixamo_rejected",
+  "male_dismissing",
+  "male_dismissing_2",
+  "male_thoughtful_shake",
+  "male_praying",
+  "male_look_over_shoulder",
 ];
 
 export const THINKING_VARIANTS: AnimationName[] = [
-  "curiosity", "confusion",
-  // ── Mixamo pack ──
-  "mixamo_female_peek_and_aim",
-  "mixamo_femme_peek_around_corner",
-  "mixamo_focus",
-  "mixamo_plotting",
+  "male_searching_files",
+  "male_button_pushing",
+  "male_thoughtful_shake",
+  "male_telling_secret",
 ];
 
-// Standard dances — high-rotation, played when Oracle gets bored.
+// Standard dances — high-rotation, played when Shadows gets bored.
 export const DANCE_VARIANTS: AnimationName[] = [
-  "dance_1", "dance_2",
-  "dance_dab", "dance_gangnam", "dance_rumba",
-  "dance_headdrop", "dance_marachinostep", "dance_northern_soul_spin",
-  "dance_pushback", "dance_backup",
-  // ── Mixamo pack ──
-  "mixamo_arms_hip_hop_dance",
-  "mixamo_bellydancing",
-  "mixamo_booty_hip_hop_dance",
-  "mixamo_dancing_1",
-  "mixamo_dancing",
-  "mixamo_gangnam_style",
-  "mixamo_hip_hop_dancing_1",
-  "mixamo_hip_hop_dancing_2",
-  "mixamo_hip_hop_dancing_3",
-  "mixamo_hip_hop_dancing_4",
-  "mixamo_hip_hop_dancing_5",
-  "mixamo_hip_hop_dancing_6",
-  "mixamo_hip_hop_dancing_7",
-  "mixamo_hip_hop_dancing_8",
-  "mixamo_hip_hop_dancing",
-  "mixamo_jazz_dancing",
-  "mixamo_macarena_dance",
-  "mixamo_rumba_dancing",
-  "mixamo_salsa_dancing",
-  "mixamo_samba_dancing_1",
-  "mixamo_samba_dancing_2",
-  "mixamo_samba_dancing_3",
-  "mixamo_samba_dancing",
-  "mixamo_snake_hip_hop_dance",
-  "mixamo_step_hip_hop_dance",
-  "mixamo_twist_dance",
+  "male_dance_hiphop",
+  "male_dance_hiphop_2",
+  "male_dance_silly",
 ];
 
 // Rare/showy moves — gated to occasional plays so they stay special.
-export const RARE_DANCE_VARIANTS: AnimationName[] = [
-];
+export const RARE_DANCE_VARIANTS: AnimationName[] = [];
 
-// Looping idles when Oracle is just hanging out.
+// Looping idles when Shadows is just hanging out.
 export const IDLE_VARIANTS: AnimationName[] = [
-  "neutral_idle", "neutral_idle2",
-  // ── Mixamo pack ──
-  "mixamo_idle",
-  "mixamo_ninja_idle_1",
-  "mixamo_ninja_idle",
-  "mixamo_leaning_on_a_wall",
+  "male_idle",
+  "male_idle_alt",
+  "male_idle_2",
+  "male_idle_bouncing",
 ];
 
-// Background "life" clips — eating, working, playing instruments. Played
-// occasionally during very long idle periods to feel like she has a life.
+// Background "life" clips — hobbies, work, in-character moments. Played
+// occasionally during very long idle periods so Shadow feels like he has
+// things going on.
 export const LIFE_VARIANTS: AnimationName[] = [
-  // ── Mixamo pack ──
-  "mixamo_talking",
-  "mixamo_talking_1",
-  "mixamo_talking_on_phone",
-  "mixamo_pacing_and_talking_on_a_phone",
+  "male_guitar",
+  "male_cards",
+  "male_texting",
+  "male_fishing",
+  "male_punching_bag",
+  "male_shooting_arrow",
+  "male_rifle",
+  "male_door_open",
+  "male_door_open_2",
+  "male_stand_to_cover",
 ];
 
-// Communicative one-shots — wave hello, point, shake hands.
+// Communicative one-shots — wave hello, salute, gesture at the user.
 export const GREETING_VARIANTS: AnimationName[] = [
-  "greeting", "greeting2",
-  // ── Mixamo pack ──
-  "mixamo_standing_greeting",
+  "male_entry",
+  "male_salute",
+  "male_salute_2",
+  "male_pointing",
 ];
 
 // Energetic action moves — for "excited" / surprised moments.
 export const ENERGETIC_VARIANTS: AnimationName[] = [
-  // ── Mixamo pack ──
-  "mixamo_falling",
-  "mixamo_jump",
-  "mixamo_taunt",
-  "mixamo_threatening",
-  "mixamo_crazy_gesture",
+  "male_surprised",
+  "male_punching_bag",
 ];
 
-// Walking variants — emotional and otherwise.
+// Walking variants — for future use (no current code path triggers walks).
 export const WALK_VARIANTS: AnimationName[] = [
-  "walk", "run", "jog",
-  // ── Mixamo pack ──
-  "mixamo_catwalk_walk_forward_highknees",
-  "mixamo_catwalk_walk_start_backwards_180l",
-  "mixamo_catwalk_walk",
-  "mixamo_run",
-  "mixamo_texting_and_walking",
-  "mixamo_walk_in_circle",
-  "mixamo_left_strafe_walking",
-  "mixamo_right_strafe_walking",
-  "mixamo_walking",
-  "mixamo_left_turn",
-  "mixamo_right_turn",
-  "mixamo_left_turn_90",
-  "mixamo_right_turn_90",
+  "male_walking",
+  "male_running",
+  "male_walk_start",
+  "male_walk_start_2",
+  "male_walk_strut",
+  "male_walk_strut_2",
+  "male_walk_catwalk",
+  "male_side_step",
 ];
 
 export function randomFrom<T>(arr: readonly T[]): T {

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { OracleAI } from "../apps/OracleAI";
+import { ShadowsAI } from "../apps/ShadowsAI";
 import { LogoMark } from "../theme/Logo";
-import { OracleSettingsMenu } from "./OracleSettingsMenu";
+import { ShadowsSettingsMenu } from "./ShadowsSettingsMenu";
 import { VrmCharacter } from "./VrmCharacter";
 import type { VRMExpressionPresetName } from "@pixiv/three-vrm";
 
@@ -54,14 +54,14 @@ export function CompanionShell() {
         <div className="flex items-center gap-2 pointer-events-none">
           <LogoMark size={18} glow />
           <span className="script text-dsos-glow text-glow text-sm">
-            Oracle
+            Shadows
           </span>
         </div>
         <div
           className="flex items-center gap-1"
           style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
         >
-          <OracleSettingsMenu />
+          <ShadowsSettingsMenu />
           <button
             onClick={() => setChatOpen((v) => !v)}
             className="text-dsos-ghost hover:text-dsos-glow text-xs px-2 py-0.5 rounded border border-dsos-flame/30 bg-black/40 backdrop-blur"
@@ -80,7 +80,7 @@ export function CompanionShell() {
       </div>
 
       {/* Chat overlay — pinned to the bottom. Open: 55% of window with full
-          chat. Collapsed: ~80px tall, still enough for OracleAI's input form
+          chat. Collapsed: ~80px tall, still enough for ShadowsAI's input form
           so the user can type without re-opening. Always visible. */}
       <div
         className={`absolute bottom-0 left-0 right-0 z-20 transition-all duration-200 ${
@@ -100,7 +100,7 @@ export function CompanionShell() {
                 "0 -10px 40px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,184,106,0.14)",
             }}
           >
-            <OracleAI />
+            <ShadowsAI />
           </div>
         </div>
       </div>

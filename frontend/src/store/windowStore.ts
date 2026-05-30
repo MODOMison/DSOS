@@ -9,7 +9,7 @@ export type AppId =
   | "soulreader"
   | "armory"
   | "terminal"
-  | "oracle"
+  | "shadows"
   | "pricing"
   | "account"
   | "cipher"
@@ -52,7 +52,7 @@ const titles: Record<AppId, string> = {
   soulreader: "Soulreader",
   armory: "Armory",
   terminal: "Hellfire Terminal",
-  oracle: "Oracle",
+  shadows: "Shadows",
   pricing: "Pricing",
   account: "Account",
   cipher: "Cipher Cellar",
@@ -69,7 +69,7 @@ const defaultSize: Record<AppId, { w: number; h: number }> = {
   soulreader: { w: 780, h: 600 },
   armory: { w: 860, h: 620 },
   terminal: { w: 760, h: 480 },
-  oracle: { w: 460, h: 600 },
+  shadows: { w: 460, h: 600 },
   pricing: { w: 620, h: 540 },
   account: { w: 520, h: 600 },
   cipher: { w: 640, h: 560 },

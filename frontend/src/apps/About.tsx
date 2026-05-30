@@ -18,21 +18,32 @@ export function About() {
       </div>
 
       <p className="text-sm text-dsos-bone mt-5 max-w-md leading-relaxed">
-        A self-contained security workstation that runs in a browser tab.
-        The desktop, windows, and taskbar are a React app; every &ldquo;program&rdquo;
-        is a thin UI over a real local tool. No installer, no VM image &mdash;
-        just <span className="mono text-dsos-glow">npm run dev</span> and an
-        open port.
+        A self-contained security workbench that lives in a browser tab.
+        Recon, CVE lookups, breach checks, phishing analysis, payload
+        libraries &mdash; every &ldquo;program&rdquo; is a thin UI over a
+        real local tool. No installer, no VM. Just spin it up.
       </p>
 
-      <p className="text-sm text-dsos-bone mt-3 max-w-md leading-relaxed">
-        Drop in an Anthropic API key to wake the Oracle AI panel.
-      </p>
+      <div className="mt-6 w-full max-w-md glass rounded-md p-4 text-left border border-dsos-flame/30">
+        <div className="script text-2xl text-dsos-glow text-glow leading-none">
+          Meet your Shadow.
+        </div>
+        <p className="text-xs text-dsos-bone mt-2 leading-relaxed">
+          You&rsquo;re not in here alone. <span className="text-dsos-flame">Shadow</span>{" "}
+          is your operator &mdash; Matt&rsquo;s always-on stand-in. Runs the
+          tools, reads the output, tells it to you straight. When a job
+          needs the real Matt, Shadow knows when to step aside.
+        </p>
+        <p className="text-[11px] text-dsos-ghost mt-2 leading-relaxed">
+          <span className="text-dsos-flame">Pro tier:</span> bring your own
+          VRM and persona &mdash; your Shadow, your face, your voice.
+        </p>
+      </div>
 
-      <div className="mt-6 grid grid-cols-2 gap-3 text-left w-full max-w-md text-xs">
+      <div className="mt-5 grid grid-cols-2 gap-3 text-left w-full max-w-md text-xs">
         <div className="glass rounded-md p-3">
           <div className="text-dsos-flame font-semibold">recon</div>
-          <div className="text-dsos-ghost">DNS · headers · TLS · subdomains · WHOIS</div>
+          <div className="text-dsos-ghost">DNS &middot; headers &middot; TLS &middot; subdomains &middot; WHOIS</div>
         </div>
         <div className="glass rounded-md p-3">
           <div className="text-dsos-flame font-semibold">vuln</div>

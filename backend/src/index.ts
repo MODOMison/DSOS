@@ -2,6 +2,9 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { existsSync } from "node:fs";
 
 import { env } from "./lib/env.js";
 import "./db/index.js"; // side-effect: bootstrap DB tables on startup
@@ -84,6 +87,21 @@ app.use(
     res.status(500).json({ error: err.message ?? "internal error" });
   }
 );
+
+// In a packaged Electron build, serve the built frontend from the same
+// origin so cookies/CORS just work and Electron only needs to open one URL.
+// Looks for frontend/dist relative to the backend's compiled entry point.
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const frontendDist = path.resolve(__dirname, "..", "..", "frontend", "dist");
+if (env.isProd && existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+  // SPA fallback: send index.html for anything that didn't match an /api/*
+  // route or a static asset, so client-side routing works on hard reload.
+  app.get(/^(?!\/api\/).*/, (_req, res) => {
+    res.sendFile(path.join(frontendDist, "index.html"));
+  });
+  console.log(`🜨  serving frontend from ${frontendDist}`);
+}
 
 app.listen(PORT, () => {
   console.log(`🜨  DSOS backend listening on http://localhost:${PORT}`);

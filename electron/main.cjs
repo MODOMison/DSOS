@@ -1,13 +1,18 @@
 // DSOS Electron main process.
-// - Spawns one full-desktop window (the existing DSOS SPA).
-// - Spawns one frameless, transparent, always-on-top Companion window
-//   that renders just Shadows. Toggle with Ctrl+Shift+O.
 //
-// Dev mode points both windows at the Vite dev server on :5173.
-// Backend (Express on :4000) is expected to be running separately —
-// `npm run dev:desktop` at the repo root starts everything together.
+// Two windows: a full DSOS desktop window + a frameless transparent
+// always-on-top Companion that renders just Shadows (toggle Ctrl+Shift+O).
+//
+// Dev mode: assumes Vite (:5173) and the backend (:4000) are already
+// running. `npm run dev:desktop` starts everything together.
+//
+// Packaged mode (app.isPackaged): spawn the bundled backend as a child
+// process, wait for it to listen on :4000, then load the windows from
+// http://localhost:4000/ (backend serves the frontend dist in prod).
 
 const path = require("node:path");
+const { spawn } = require("node:child_process");
+const http = require("node:http");
 const {
   app,
   BrowserWindow,
@@ -16,15 +21,76 @@ const {
   screen,
 } = require("electron");
 
-const DEV_URL = process.env.DSOS_DEV_URL || "http://localhost:5173";
 const IS_DEV = !app.isPackaged;
+const BACKEND_PORT = 4000;
+const DEV_URL = process.env.DSOS_DEV_URL || "http://localhost:5173";
+const PROD_URL = `http://localhost:${BACKEND_PORT}`;
 
 /** @type {BrowserWindow | null} */
 let mainWin = null;
 /** @type {BrowserWindow | null} */
 let companionWin = null;
+/** @type {import("node:child_process").ChildProcess | null} */
+let backendProc = null;
 
-function createMainWindow() {
+// Probe :PORT once via a tiny GET. Resolves true if the server answered.
+function pingBackend(port) {
+  return new Promise((resolve) => {
+    const req = http.get(
+      { host: "127.0.0.1", port, path: "/api/health", timeout: 1000 },
+      (res) => {
+        res.resume();
+        resolve(res.statusCode === 200);
+      }
+    );
+    req.on("error", () => resolve(false));
+    req.on("timeout", () => {
+      req.destroy();
+      resolve(false);
+    });
+  });
+}
+
+async function waitForBackend(port, timeoutMs = 30000) {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    if (await pingBackend(port)) return true;
+    await new Promise((r) => setTimeout(r, 250));
+  }
+  return false;
+}
+
+function spawnBackend() {
+  if (backendProc) return;
+  // Packaged layout (electron-builder extraResources):
+  //   resources/
+  //     backend/dist/index.js          ← entry
+  //     backend/node_modules/...       ← runtime deps including native
+  // process.resourcesPath points at resources/ inside the .app or unpacked.
+  const backendEntry = path.join(
+    process.resourcesPath,
+    "backend",
+    "dist",
+    "index.js"
+  );
+  backendProc = spawn(process.execPath, [backendEntry], {
+    env: {
+      ...process.env,
+      NODE_ENV: "production",
+      PORT: String(BACKEND_PORT),
+      ELECTRON_RUN_AS_NODE: "1",
+    },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  backendProc.stdout?.on("data", (b) => process.stdout.write(`[backend] ${b}`));
+  backendProc.stderr?.on("data", (b) => process.stderr.write(`[backend] ${b}`));
+  backendProc.on("exit", (code) => {
+    console.log(`[dsos] backend exited with code ${code}`);
+    backendProc = null;
+  });
+}
+
+function createMainWindow(url) {
   mainWin = new BrowserWindow({
     width: 1280,
     height: 800,
@@ -39,18 +105,13 @@ function createMainWindow() {
       nodeIntegration: false,
     },
   });
-
-  mainWin.loadURL(DEV_URL);
-  if (IS_DEV) {
-    // mainWin.webContents.openDevTools({ mode: "detach" });
-  }
-
+  mainWin.loadURL(url);
   mainWin.on("closed", () => {
     mainWin = null;
   });
 }
 
-function createCompanionWindow() {
+function createCompanionWindow(url) {
   const display = screen.getPrimaryDisplay();
   const { width: sw, height: sh } = display.workAreaSize;
   const w = 420;
@@ -75,18 +136,16 @@ function createCompanionWindow() {
       nodeIntegration: false,
     },
   });
-
   companionWin.setAlwaysOnTop(true, "floating");
-  companionWin.loadURL(`${DEV_URL}/?mode=companion`);
-
+  companionWin.loadURL(`${url}/?mode=companion`);
   companionWin.on("closed", () => {
     companionWin = null;
   });
 }
 
-function toggleCompanion() {
+function toggleCompanion(url) {
   if (!companionWin) {
-    createCompanionWindow();
+    createCompanionWindow(url);
     companionWin.once("ready-to-show", () => companionWin?.show());
     return;
   }
@@ -98,18 +157,32 @@ function toggleCompanion() {
   }
 }
 
-app.whenReady().then(() => {
-  createMainWindow();
-  createCompanionWindow();
+async function boot() {
+  const baseUrl = IS_DEV ? DEV_URL : PROD_URL;
 
-  // Show the companion shortly after boot so the user sees it exists.
+  if (!IS_DEV) {
+    spawnBackend();
+    const ready = await waitForBackend(BACKEND_PORT);
+    if (!ready) {
+      console.error("[dsos] backend never came up — aborting launch");
+      app.quit();
+      return;
+    }
+  }
+
+  createMainWindow(baseUrl);
+  createCompanionWindow(baseUrl);
   setTimeout(() => companionWin?.show(), 1200);
 
-  globalShortcut.register("Control+Shift+O", toggleCompanion);
+  globalShortcut.register("Control+Shift+O", () => toggleCompanion(baseUrl));
+}
 
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
-  });
+app.whenReady().then(boot);
+
+app.on("activate", () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    boot();
+  }
 });
 
 // Preload bridge endpoints.
@@ -117,12 +190,19 @@ ipcMain.handle("dsos:hide-companion", () => {
   companionWin?.hide();
 });
 ipcMain.handle("dsos:show-companion", () => {
-  if (!companionWin) createCompanionWindow();
+  if (!companionWin) {
+    const baseUrl = IS_DEV ? DEV_URL : PROD_URL;
+    createCompanionWindow(baseUrl);
+  }
   companionWin?.show();
 });
 
 app.on("will-quit", () => {
   globalShortcut.unregisterAll();
+  if (backendProc && !backendProc.killed) {
+    backendProc.kill();
+    backendProc = null;
+  }
 });
 
 app.on("window-all-closed", () => {

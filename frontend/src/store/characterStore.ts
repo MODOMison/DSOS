@@ -220,17 +220,9 @@ export const useCharacter = create<CharacterStore>((set, get) => ({
   },
 }));
 
-// Helper: which idle clip to loop for a given pose.
-export function idleClipForPose(pose: Pose): AnimationName {
-  switch (pose) {
-    case "sitting":
-      return "sit_idle";
-    case "kneeling":
-      return "kneel_idle";
-    case "laying":
-      return "laying_idle";
-    case "standing":
-    default:
-      return "male_idle_2";
-  }
+// Helper: which idle clip to loop for a given pose. All non-standing
+// poses currently fall back to the standing idle — no male sit/kneel/lay
+// clips exist yet, and no UI path triggers those poses.
+export function idleClipForPose(_pose: Pose): AnimationName {
+  return "male_idle_2";
 }

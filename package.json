@@ -12,11 +12,85 @@
     "dev:desktop": "concurrently -k -n backend,frontend,electron -c red,yellow,magenta \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\" \"npm run electron:wait\"",
     "electron:wait": "wait-on http://localhost:5173 && electron .",
     "electron": "electron .",
-    "build": "npm --prefix frontend run build && npm --prefix backend run build"
+    "build": "npm --prefix frontend run build && npm --prefix backend run build",
+    "package:dir": "npm run build && electron-builder build --win --dir",
+    "package:win": "npm run build && electron-builder build --win",
+    "package:mac": "npm run build && electron-builder build --mac",
+    "package:linux": "npm run build && electron-builder build --linux"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",
     "electron": "^42.1.0",
+    "electron-builder": "^25.1.8",
     "wait-on": "^9.0.10"
+  },
+  "build": {
+    "appId": "com.dsos.app",
+    "productName": "DSOS",
+    "directories": {
+      "buildResources": "build",
+      "output": "release"
+    },
+    "files": [
+      "electron/**/*",
+      "package.json",
+      "!node_modules/**"
+    ],
+    "extraResources": [
+      {
+        "from": "frontend/dist",
+        "to": "frontend/dist"
+      },
+      {
+        "from": "backend/dist",
+        "to": "backend/dist"
+      },
+      {
+        "from": "backend/node_modules",
+        "to": "backend/node_modules",
+        "filter": [
+          "**/*",
+          "!**/.bin/**",
+          "!**/*.md",
+          "!**/test/**",
+          "!**/tests/**"
+        ]
+      },
+      {
+        "from": "backend/settings.json",
+        "to": "backend/settings.json"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "category": "public.app-category.developer-tools"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64"]
+        }
+      ],
+      "category": "Development"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }

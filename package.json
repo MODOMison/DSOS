@@ -19,8 +19,9 @@
     "package:linux": "npm run build && electron-builder build --linux"
   },
   "devDependencies": {
+    "@electron/rebuild": "^4.0.4",
     "concurrently": "^9.1.0",
-    "electron": "^42.1.0",
+    "electron": "^35.7.5",
     "electron-builder": "^25.1.8",
     "wait-on": "^9.0.10"
   },
@@ -65,7 +66,9 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ]
     },
@@ -73,7 +76,10 @@
       "target": [
         {
           "target": "dmg",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         }
       ],
       "category": "public.app-category.developer-tools"
@@ -82,7 +88,9 @@
       "target": [
         {
           "target": "AppImage",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "category": "Development"

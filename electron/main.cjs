@@ -11,6 +11,7 @@
 // http://localhost:4000/ (backend serves the frontend dist in prod).
 
 const path = require("node:path");
+const fs = require("node:fs");
 const { spawn } = require("node:child_process");
 const http = require("node:http");
 const {
@@ -25,6 +26,21 @@ const IS_DEV = !app.isPackaged;
 const BACKEND_PORT = 4000;
 const DEV_URL = process.env.DSOS_DEV_URL || "http://localhost:5173";
 const PROD_URL = `http://localhost:${BACKEND_PORT}`;
+
+// Capture any unhandled main-process error to a file we can actually find.
+// Default Electron behavior shows a modal dialog and gives no log on disk.
+function crashLog(label, err) {
+  try {
+    const dir = app.isReady() ? app.getPath("userData") : path.dirname(process.execPath);
+    fs.mkdirSync(dir, { recursive: true });
+    const line = `[${new Date().toISOString()}] ${label}: ${err?.stack ?? err}\n`;
+    fs.appendFileSync(path.join(dir, "main-crash.log"), line);
+  } catch {
+    /* logging itself failed — nothing left to do */
+  }
+}
+process.on("uncaughtException", (e) => crashLog("uncaughtException", e));
+process.on("unhandledRejection", (e) => crashLog("unhandledRejection", e));
 
 /** @type {BrowserWindow | null} */
 let mainWin = null;
@@ -73,6 +89,21 @@ function spawnBackend() {
     "dist",
     "index.js"
   );
+
+  // Route backend stdout/stderr to a log file. process.stdout/stderr aren't
+  // attached to a terminal in a packaged GUI app, so writing to them throws
+  // EPIPE and crashes main. The log file is also actually useful — users
+  // can paste it when reporting issues.
+  const logDir = app.getPath("logs");
+  try {
+    fs.mkdirSync(logDir, { recursive: true });
+  } catch {
+    /* logs dir already exists or unwritable; either way carry on */
+  }
+  const logPath = path.join(logDir, "backend.log");
+  const logStream = fs.createWriteStream(logPath, { flags: "a" });
+  logStream.write(`\n=== backend spawn ${new Date().toISOString()} ===\n`);
+
   backendProc = spawn(process.execPath, [backendEntry], {
     env: {
       ...process.env,
@@ -82,10 +113,27 @@ function spawnBackend() {
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
-  backendProc.stdout?.on("data", (b) => process.stdout.write(`[backend] ${b}`));
-  backendProc.stderr?.on("data", (b) => process.stderr.write(`[backend] ${b}`));
+  backendProc.stdout?.on("data", (b) => {
+    try {
+      logStream.write(b);
+    } catch {
+      /* log write failed; nothing to do from here */
+    }
+  });
+  backendProc.stderr?.on("data", (b) => {
+    try {
+      logStream.write(b);
+    } catch {
+      /* log write failed; nothing to do from here */
+    }
+  });
   backendProc.on("exit", (code) => {
-    console.log(`[dsos] backend exited with code ${code}`);
+    try {
+      logStream.write(`\n=== backend exited code=${code} ===\n`);
+      logStream.end();
+    } catch {
+      /* ignore */
+    }
     backendProc = null;
   });
 }

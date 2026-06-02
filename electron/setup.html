@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline';" />
+    <title>DSOS setup</title>
+    <style>
+      :root {
+        --bg: #0a0506;
+        --bone: #e8e0d5;
+        --ghost: #8a7f74;
+        --flame: #ff5a1f;
+        --ember: #ff8a3d;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0; height: 100%;
+        background: var(--bg); color: var(--bone);
+        font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+        -webkit-user-select: none; user-select: none;
+        overflow: hidden;
+      }
+      .wrap {
+        height: 100%; display: flex; flex-direction: column;
+        justify-content: center; padding: 32px 36px; gap: 14px;
+      }
+      .mark { font-size: 22px; letter-spacing: 2px; color: var(--flame); }
+      h1 { font-size: 18px; font-weight: 600; margin: 0; }
+      .sub { font-size: 12.5px; color: var(--ghost); line-height: 1.5; margin: 0; }
+      .bar {
+        height: 14px; border-radius: 999px; background: #1c1311;
+        overflow: hidden; border: 1px solid #2a1d19;
+      }
+      .fill {
+        height: 100%; width: 0%;
+        background: linear-gradient(90deg, var(--flame), var(--ember));
+        transition: width 0.25s ease; border-radius: 999px;
+      }
+      .fill.indet {
+        width: 35% !important;
+        animation: slide 1.2s ease-in-out infinite alternate;
+      }
+      @keyframes slide { from { margin-left: 0; } to { margin-left: 65%; } }
+      .stats { display: flex; justify-content: space-between; font-size: 12px; color: var(--ghost); }
+      .pct { color: var(--bone); font-variant-numeric: tabular-nums; }
+      .btns { display: flex; gap: 10px; margin-top: 6px; }
+      button {
+        flex: 1; padding: 9px 12px; border-radius: 8px; cursor: pointer;
+        font-size: 13px; font-weight: 600; border: 1px solid #2a1d19;
+        background: #160f0d; color: var(--bone);
+      }
+      button.primary { background: linear-gradient(90deg, var(--flame), var(--ember)); color: #1a0c06; border: none; }
+      button:hover { filter: brightness(1.1); }
+      .hidden { display: none; }
+      .err { color: #ff7a6b; font-size: 12.5px; line-height: 1.5; margin: 0; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="mark">DSOS</div>
+      <h1 id="title">Setting up your Shadow…</h1>
+      <p class="sub" id="sub">Preparing your first-run download.</p>
+
+      <div class="bar"><div class="fill indet" id="fill"></div></div>
+      <div class="stats">
+        <span id="bytes">starting…</span>
+        <span class="pct" id="pct"></span>
+      </div>
+
+      <p class="err hidden" id="err"></p>
+      <div class="btns hidden" id="errBtns">
+        <button class="primary" id="retry">Retry</button>
+        <button id="cont">Continue without it</button>
+      </div>
+    </div>
+
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const fmt = (n) => {
+        if (!n || n < 0) return "0 B";
+        const u = ["B", "KB", "MB", "GB"];
+        let i = 0;
+        while (n >= 1024 && i < u.length - 1) { n /= 1024; i++; }
+        return n.toFixed(i >= 2 ? 1 : 0) + " " + u[i];
+      };
+
+      const api = window.dsosSetup;
+
+      api.on("setup:start", (d) => {
+        $("title").textContent = "Setting up your Shadow…";
+        $("sub").textContent =
+          "Downloading the AI model (" + d.fileName + ", ~" + d.approxGB +
+          " GB). This happens once — after this, your Shadow runs fully offline.";
+        $("err").classList.add("hidden");
+        $("errBtns").classList.add("hidden");
+        $("fill").classList.add("indet");
+        $("bytes").textContent = "starting…";
+        $("pct").textContent = "";
+      });
+
+      api.on("setup:progress", (d) => {
+        const fill = $("fill");
+        if (d.total > 0) {
+          fill.classList.remove("indet");
+          const pct = Math.min(100, (d.downloaded / d.total) * 100);
+          fill.style.width = pct.toFixed(1) + "%";
+          $("pct").textContent = pct.toFixed(0) + "%";
+          $("bytes").textContent = fmt(d.downloaded) + " / " + fmt(d.total);
+        } else {
+          $("bytes").textContent = fmt(d.downloaded) + " downloaded";
+        }
+      });
+
+      api.on("setup:done", () => {
+        const fill = $("fill");
+        fill.classList.remove("indet");
+        fill.style.width = "100%";
+        $("title").textContent = "Your Shadow is ready.";
+        $("sub").textContent = "Starting DSOS…";
+        $("pct").textContent = "100%";
+      });
+
+      api.on("setup:error", (d) => {
+        $("fill").classList.remove("indet");
+        $("title").textContent = "Download interrupted";
+        $("sub").textContent =
+          "The model didn't finish downloading. Check your connection and retry — " +
+          "or continue and set up your Shadow later from Settings.";
+        $("err").textContent = d.message || "Unknown error.";
+        $("err").classList.remove("hidden");
+        $("errBtns").classList.remove("hidden");
+      });
+
+      $("retry").addEventListener("click", () => api.retry());
+      $("cont").addEventListener("click", () => api.continue());
+    </script>
+  </body>
+</html>

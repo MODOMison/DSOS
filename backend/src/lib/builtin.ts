@@ -32,7 +32,13 @@ export interface BuiltinConfig {
   systemPrompt: string;
 }
 
-const MODELS_DIR = path.resolve(process.cwd(), "models");
+// Where to look for .gguf files. In a packaged Electron build the backend's
+// cwd is unreliable/read-only, so Electron sets DSOS_MODELS_DIR to a writable
+// per-user location (app userData) that it downloads the model into on first
+// run. In dev there's no env var and we fall back to backend/models/.
+const MODELS_DIR = process.env.DSOS_MODELS_DIR
+  ? path.resolve(process.env.DSOS_MODELS_DIR)
+  : path.resolve(process.cwd(), "models");
 
 export function findBuiltinModel(explicitPath?: string): string | null {
   if (explicitPath && fs.existsSync(explicitPath)) return explicitPath;

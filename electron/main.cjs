@@ -14,6 +14,7 @@ const path = require("node:path");
 const fs = require("node:fs");
 const { spawn } = require("node:child_process");
 const http = require("node:http");
+const https = require("node:https");
 const {
   app,
   BrowserWindow,
@@ -26,6 +27,29 @@ const IS_DEV = !app.isPackaged;
 const BACKEND_PORT = 4000;
 const DEV_URL = process.env.DSOS_DEV_URL || "http://localhost:5173";
 const PROD_URL = `http://localhost:${BACKEND_PORT}`;
+
+// Default built-in model. Mirrors backend/scripts/download-model.* — keep the
+// filename in sync with what those scripts fetch so dev and packaged agree.
+const MODEL = {
+  fileName: "mythomax-l2-13b.Q4_K_M.gguf",
+  url: "https://huggingface.co/TheBloke/MythoMax-L2-13B-GGUF/resolve/main/mythomax-l2-13b.Q4_K_M.gguf",
+  approxGB: 7.4,
+};
+
+// The model is too big to bundle in the installer, so it lives in a writable
+// per-user dir and is downloaded on first launch. The backend is told where
+// via DSOS_MODELS_DIR (see backend/src/lib/builtin.ts).
+function getModelsDir() {
+  return path.join(app.getPath("userData"), "models");
+}
+
+function hasAnyModel(dir) {
+  try {
+    return fs.readdirSync(dir).some((f) => f.toLowerCase().endsWith(".gguf"));
+  } catch {
+    return false;
+  }
+}
 
 // Capture any unhandled main-process error to a file we can actually find.
 // Default Electron behavior shows a modal dialog and gives no log on disk.
@@ -76,6 +100,146 @@ async function waitForBackend(port, timeoutMs = 30000) {
   return false;
 }
 
+// Stream a URL to disk, following redirects, reporting progress as bytes come
+// in. Rejects on any non-200 final status or network error. The caller writes
+// to a ".part" path and renames on success so a crash never leaves a truncated
+// file that looks complete.
+function downloadFile(url, dest, onProgress) {
+  return new Promise((resolve, reject) => {
+    const file = fs.createWriteStream(dest);
+    let downloaded = 0;
+    let settled = false;
+    const fail = (err) => {
+      if (settled) return;
+      settled = true;
+      file.destroy();
+      reject(err);
+    };
+
+    const get = (u, redirects) => {
+      if (redirects > 5) return fail(new Error("too many redirects"));
+      const req = https.get(
+        u,
+        { headers: { "User-Agent": "DSOS-installer" } },
+        (res) => {
+          const code = res.statusCode || 0;
+          // HuggingFace 302-redirects to a CDN; follow it.
+          if (code >= 300 && code < 400 && res.headers.location) {
+            res.resume();
+            return get(new URL(res.headers.location, u).toString(), redirects + 1);
+          }
+          if (code !== 200) {
+            res.resume();
+            return fail(new Error(`download failed: HTTP ${code}`));
+          }
+          const total = Number(res.headers["content-length"] || 0);
+          res.on("data", (chunk) => {
+            downloaded += chunk.length;
+            onProgress(downloaded, total);
+          });
+          res.pipe(file);
+          file.on("finish", () =>
+            file.close(() => {
+              if (!settled) {
+                settled = true;
+                resolve();
+              }
+            })
+          );
+        }
+      );
+      req.on("error", fail);
+    };
+
+    file.on("error", fail);
+    get(url, 0);
+  });
+}
+
+// First-run model bootstrap. If no .gguf is present in the per-user models
+// dir, open a small setup window and download the default model with a live
+// progress bar before the rest of the app boots. Resolves once a model is in
+// place, or when the user chooses to continue without one (Shadow then runs
+// in cloud/Ollama mode, or stays dormant until configured).
+async function ensureModel() {
+  const dir = getModelsDir();
+  fs.mkdirSync(dir, { recursive: true });
+  if (hasAnyModel(dir)) return;
+
+  const setupWin = new BrowserWindow({
+    width: 540,
+    height: 380,
+    resizable: false,
+    backgroundColor: "#0a0506",
+    title: "DSOS — first-run setup",
+    autoHideMenuBar: true,
+    webPreferences: {
+      preload: path.join(__dirname, "setup-preload.cjs"),
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
+  });
+  await setupWin.loadFile(path.join(__dirname, "setup.html"));
+
+  const dest = path.join(dir, MODEL.fileName);
+  const part = `${dest}.part`;
+
+  const send = (channel, payload) => {
+    if (!setupWin.isDestroyed()) setupWin.webContents.send(channel, payload);
+  };
+
+  // Throttle progress UI to ~4 updates/sec (data fires thousands of times/sec).
+  let lastTick = 0;
+  const onProgress = (downloaded, total) => {
+    const now = Date.now();
+    if (now - lastTick < 250 && downloaded !== total) return;
+    lastTick = now;
+    send("setup:progress", { downloaded, total });
+  };
+
+  await new Promise((resolve) => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      ipcMain.removeAllListeners("setup:retry");
+      ipcMain.removeAllListeners("setup:continue");
+      if (!setupWin.isDestroyed()) setupWin.close();
+      resolve();
+    };
+
+    const run = () => {
+      send("setup:start", {
+        fileName: MODEL.fileName,
+        approxGB: MODEL.approxGB,
+      });
+      downloadFile(MODEL.url, part, onProgress)
+        .then(() => {
+          fs.renameSync(part, dest);
+          send("setup:done", {});
+          setTimeout(finish, 800);
+        })
+        .catch((err) => {
+          try {
+            if (fs.existsSync(part)) fs.unlinkSync(part);
+          } catch {
+            /* leftover .part; harmless, next run overwrites */
+          }
+          send("setup:error", {
+            message: String(err && err.message ? err.message : err),
+          });
+        });
+    };
+
+    ipcMain.on("setup:retry", run);
+    ipcMain.on("setup:continue", finish);
+    // Closing the window = "continue without the model".
+    setupWin.on("closed", finish);
+
+    run();
+  });
+}
+
 function spawnBackend() {
   if (backendProc) return;
   // Packaged layout (electron-builder extraResources):
@@ -110,6 +274,10 @@ function spawnBackend() {
       NODE_ENV: "production",
       PORT: String(BACKEND_PORT),
       ELECTRON_RUN_AS_NODE: "1",
+      // Point the built-in GGUF loader at the writable per-user models dir
+      // that ensureModel() downloaded into. Without this the backend would
+      // look in process.cwd()/models, which is wrong in a packaged app.
+      DSOS_MODELS_DIR: getModelsDir(),
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -209,6 +377,9 @@ async function boot() {
   const baseUrl = IS_DEV ? DEV_URL : PROD_URL;
 
   if (!IS_DEV) {
+    // First launch: make sure the model is downloaded before the backend
+    // starts looking for it. Shows the setup window if needed.
+    await ensureModel();
     spawnBackend();
     const ready = await waitForBackend(BACKEND_PORT);
     if (!ready) {

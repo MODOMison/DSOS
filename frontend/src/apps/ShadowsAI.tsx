@@ -10,34 +10,34 @@ function greetingFor(hour: number, name?: string): string {
   const who = name ? `, ${name}` : "";
   if (hour >= 5 && hour < 12) {
     const pool = [
-      `Morning${who}. Coffee or world domination first?`,
-      `You're up early${who}. What are we breaking today?`,
-      `Sun's coming up. What's on your mind${who}?`,
+      `Morning${who}. I'm Shadow — Matt's, technically, but I'm here for you. What are we working on?`,
+      `You're up early${who}. Good time to think clearly. I'm Shadow; where do you want to start?`,
+      `Morning${who}. Shadow here. Tell me what's in front of you and we'll take it apart.`,
     ];
     return pool[Math.floor(Math.random() * pool.length)];
   }
   if (hour >= 12 && hour < 17) {
     const pool = [
-      `Hey${who}. What's the situation?`,
-      `Back already${who}? Good. Hit me.`,
-      `Afternoon${who}. Anything interesting cross your radar?`,
+      `Hey${who}. Shadow here — Matt's, looking after you while you're in here. What's the situation?`,
+      `Afternoon${who}. I'm Shadow. What are you trying to get done?`,
+      `Back at it${who}? Good. I'm Shadow — walk me through it.`,
     ];
     return pool[Math.floor(Math.random() * pool.length)];
   }
   if (hour >= 17 && hour < 22) {
     const pool = [
-      `Evening${who}. Long day or just getting started?`,
-      `Hey${who}. What are we working on?`,
-      `Welcome back${who}. I've been quiet — talk to me.`,
+      `Evening${who}. I'm Shadow — Matt built me to stand in for him in here. What are we working on?`,
+      `Hey${who}. Shadow here. Long day or just getting started?`,
+      `Evening${who}. I'm Shadow. Lay it out and we'll figure it out.`,
     ];
     return pool[Math.floor(Math.random() * pool.length)];
   }
   // late night
   const pool = [
-    `Up late${who}? Same. What are we doing?`,
-    `It's late${who}. Either inspired or insomniac — which is it?`,
-    `Hey${who}. The good ideas usually happen now.`,
-    `Burning the candle${who}? Let's make it count.`,
+    `Up late${who}? I'm Shadow — Matt's, and I don't keep hours. What are we doing?`,
+    `Late one${who}. Shadow here. Clear head or running on fumes — either way, where do we start?`,
+    `Hey${who}. I'm Shadow. The quiet hours are good for the hard problems. What's on your mind?`,
+    `Still going${who}? Same. I'm Shadow — let's make it count.`,
   ];
   return pool[Math.floor(Math.random() * pool.length)];
 }
@@ -307,8 +307,8 @@ export function ShadowsAI() {
           className="input-ember text-xs"
           placeholder={
             status?.available
-              ? "ask shadows... (it can call DSOS tools)"
-              : "shadows is dormant — see panel above"
+              ? "talk to your shadow... (it can call DSOS tools)"
+              : "your shadow is dormant — see panel above"
           }
           value={input}
           onChange={(e) => setInput(e.target.value)}

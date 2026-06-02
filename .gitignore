@@ -9,9 +9,11 @@ release
 .vscode
 .idea
 
-# Local LLM model files — huge, never commit
+# Local LLM model weights — huge, never commit.
+# NOTE: only the weights (*.gguf) are ignored, NOT the backend/models/ folder.
+# The folder ships with its README so a fresh clone knows exactly where the
+# model goes and how to fetch it. Do not re-add `backend/models/` here.
 *.gguf
-backend/models/
 
 # SQLite database (local user data + WAL)
 *.db

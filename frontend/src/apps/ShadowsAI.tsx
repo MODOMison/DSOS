@@ -2,8 +2,17 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { api, type ShadowsEvent } from "../lib/api";
+import {
+  cancelSpeech,
+  isSpeechSupported,
+  isTtsSpeaking,
+  onSpeakingChange,
+  speak,
+  type TtsSettings,
+} from "../lib/tts";
 import { useCharacter } from "../store/characterStore";
 import { useAuthStore } from "../store/authStore";
+import { useTtsSettings } from "../store/ttsStore";
 import { ShadowsSettingsMenu } from "../components/ShadowsSettingsMenu";
 
 function greetingFor(hour: number, name?: string): string {
@@ -60,6 +69,7 @@ interface ToolCall {
 }
 
 export function ShadowsAI() {
+  const ttsSettings = useTtsSettings((s) => s.settings);
   const [status, setStatus] = useState<{
     available: boolean;
     reason?: string;
@@ -73,6 +83,18 @@ export function ShadowsAI() {
   const [err, setErr] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const ttsSettingsRef = useRef(ttsSettings);
+
+  useEffect(() => {
+    ttsSettingsRef.current = ttsSettings;
+    if (!ttsSettings.enabled) cancelSpeech();
+  }, [ttsSettings]);
+
+  useEffect(() => {
+    return onSpeakingChange((speaking) => {
+      useCharacter.getState().setSpeaking(speaking);
+    });
+  }, []);
 
   useEffect(() => {
     api.ai
@@ -89,6 +111,8 @@ export function ShadowsAI() {
 
   async function send() {
     if (!input.trim() || sending || !status?.available) return;
+    cancelSpeech();
+    let sentenceBuffer = "";
     const userTurn: Turn = { kind: "user", text: input.trim() };
     const assistantTurn: Turn = {
       kind: "assistant",
@@ -130,12 +154,24 @@ export function ShadowsAI() {
               c.onToolEnd();
               break;
             case "text":
-              c.onTextStream();
+              if (ttsSettingsRef.current.enabled && isSpeechSupported()) {
+                c.markActivity();
+              } else {
+                c.setSpeaking(false);
+                c.markActivity();
+              }
+              sentenceBuffer = speakCompletedSentences(
+                sentenceBuffer + e.delta,
+                ttsSettingsRef.current
+              );
               break;
             case "done":
-              c.onResponseDone();
+              speakRemainder(sentenceBuffer, ttsSettingsRef.current);
+              sentenceBuffer = "";
+              c.onResponseDone(isTtsSpeaking());
               break;
             case "error":
+              sentenceBuffer = "";
               c.onError();
               break;
           }
@@ -192,6 +228,7 @@ export function ShadowsAI() {
 
   function stop() {
     abortRef.current?.abort();
+    cancelSpeech();
     setSending(false);
   }
 
@@ -330,6 +367,24 @@ export function ShadowsAI() {
       </form>
     </div>
   );
+}
+
+function speakCompletedSentences(text: string, settings: TtsSettings): string {
+  let buffer = text;
+  const sentencePattern = /([\s\S]*?[.!?]+)(?=\s|$)|([\s\S]*?\n+)/;
+  let match = buffer.match(sentencePattern);
+  while (match?.index === 0) {
+    const sentence = (match[1] ?? match[2] ?? "").trim();
+    if (sentence) void speak(sentence, settings);
+    buffer = buffer.slice(match[0].length);
+    match = buffer.match(sentencePattern);
+  }
+  return buffer;
+}
+
+function speakRemainder(text: string, settings: TtsSettings) {
+  const trimmed = text.trim();
+  if (trimmed) void speak(trimmed, settings);
 }
 
 interface ShadowsStatus {

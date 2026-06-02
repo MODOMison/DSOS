@@ -75,7 +75,7 @@ interface CharacterStore {
   onToolStart: () => void;
   onToolEnd: () => void;
   onTextStream: () => void;
-  onResponseDone: () => void;
+  onResponseDone: (keepSpeaking?: boolean) => void;
   onError: () => void;
 
   // Long-idle dance check (called from VrmCharacter useFrame).
@@ -178,8 +178,8 @@ export const useCharacter = create<CharacterStore>((set, get) => ({
     if (!get().isSpeaking) set({ isSpeaking: true });
     set({ lastActivity: Date.now() });
   },
-  onResponseDone: () => {
-    set({ isSpeaking: false, mood: "happy", lastActivity: Date.now() });
+  onResponseDone: (keepSpeaking = false) => {
+    set({ isSpeaking: keepSpeaking, mood: "happy", lastActivity: Date.now() });
     get().playClip(pickAllowed(HAPPY_VARIANTS, get().banned), "once");
     setTimeout(() => {
       if (get().mood === "happy") set({ mood: "idle" });

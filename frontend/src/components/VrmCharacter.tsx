@@ -22,6 +22,7 @@ import {
   type AnimationName,
 } from "../lib/bvhLoader";
 import { loadFbxClip } from "../lib/fbxLoader";
+import { isTtsSpeaking, onMouthAmplitude } from "../lib/tts";
 
 // Pose-specific body data is no longer driven procedurally — BVH clips
 // take over once they load. See store/characterStore.ts for idleClipForPose
@@ -159,6 +160,7 @@ function Character({ url, mouthOpenRef, expressionRef }: CharacterProps) {
   const blinkTimeoutRef = useRef(0);
   const blinkingRef = useRef(false);
   const blinkStartRef = useRef(0);
+  const smoothMouthRef = useRef(0);
 
   // Mirror the Zustand store into a ref so useFrame can read without
   // re-rendering the Canvas tree every state change.
@@ -176,6 +178,13 @@ function Character({ url, mouthOpenRef, expressionRef }: CharacterProps) {
       };
     });
   }, []);
+
+  useEffect(() => {
+    if (!mouthOpenRef) return;
+    return onMouthAmplitude((amp) => {
+      mouthOpenRef.current = amp;
+    });
+  }, [mouthOpenRef]);
 
   // ---- AnimationMixer + clip plumbing ------------------------------------
   // One mixer per loaded VRM. We cache parsed clips by name; cache actions
@@ -405,18 +414,32 @@ function Character({ url, mouthOpenRef, expressionRef }: CharacterProps) {
 
     const em = vrm.expressionManager;
 
-    // Mouth — when speaking, simulate phoneme-like motion until TTS lands.
-    if (isSpeaking) {
+    const ttsMouth = mouthOpenRef?.current ?? 0;
+    const smoothing = 1 - Math.exp(-delta / 0.08);
+    smoothMouthRef.current = THREE.MathUtils.lerp(
+      smoothMouthRef.current,
+      ttsMouth,
+      smoothing
+    );
+
+    if (isTtsSpeaking()) {
+      em?.setValue(
+        VRMExpressionPresetName.Aa,
+        THREE.MathUtils.clamp(smoothMouthRef.current, 0, 1)
+      );
+    } else if (isSpeaking) {
       const wave = (Math.sin(t * 12) + 1) * 0.5;
       const noise = (Math.sin(t * 17.3) + 1) * 0.25;
       em?.setValue(
         VRMExpressionPresetName.Aa,
         THREE.MathUtils.clamp(wave * 0.5 + noise, 0, 0.7)
       );
-    } else if (mouthOpenRef) {
-      const m = THREE.MathUtils.clamp(mouthOpenRef.current ?? 0, 0, 1);
-      em?.setValue(VRMExpressionPresetName.Aa, m);
     } else {
+      smoothMouthRef.current = THREE.MathUtils.lerp(
+        smoothMouthRef.current,
+        0,
+        smoothing
+      );
       em?.setValue(VRMExpressionPresetName.Aa, 0);
     }
 
@@ -504,6 +527,8 @@ export function VrmCharacter({
   mouthOpenRef,
   expressionRef,
 }: VrmCharacterProps) {
+  const internalMouthOpenRef = useRef(0);
+  const activeMouthOpenRef = mouthOpenRef ?? internalMouthOpenRef;
   // Probe whether the file exists so we can show the hint without spamming
   // the Three.js loader with errors on every render.
   const [available, setAvailable] = useState<boolean | null>(null);
@@ -554,7 +579,7 @@ export function VrmCharacter({
         {available && (
           <Character
             url={src}
-            mouthOpenRef={mouthOpenRef}
+            mouthOpenRef={activeMouthOpenRef}
             expressionRef={expressionRef}
           />
         )}

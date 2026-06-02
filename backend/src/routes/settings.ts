@@ -7,7 +7,7 @@ import {
   type ShadowsSettings,
 } from "../lib/settings.js";
 import { probeOllama } from "../lib/ollama.js";
-import { probeBuiltin } from "../lib/builtin.js";
+import { probeBuiltin, type BuiltinProbeResult } from "../lib/builtin.js";
 import { probeOpenAICompat } from "../lib/openaiCompat.js";
 
 export const settingsRouter = Router();
@@ -26,7 +26,7 @@ settingsRouter.get("/", async (_req, res) => {
     probeOllama(s.ollamaUrl),
     probeBuiltinNeeded
       ? probeBuiltin(s.builtinModelPath || undefined)
-      : Promise.resolve({ available: false as const, reason: undefined }),
+      : Promise.resolve<BuiltinProbeResult>({ available: false, reason: undefined }),
   ]);
   const openaiCompat =
     s.backend === "openai-compat"

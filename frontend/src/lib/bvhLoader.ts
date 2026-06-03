@@ -158,6 +158,9 @@ export const ANIMATIONS = {
   male_idle_alt: "Idle.fbx",
   male_idle_2: "Idle (1).fbx",
   male_idle_bouncing: "Bouncing Fight Idle.fbx",
+  sit_idle: "Idle (1).fbx",
+  kneel_idle: "Idle (1).fbx",
+  laying_idle: "Idle (1).fbx",
   // Reactions / gestures
   male_agreeing: "Agreeing.fbx",
   male_dismissing: "Dismissing Gesture.fbx",

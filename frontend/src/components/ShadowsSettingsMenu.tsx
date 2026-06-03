@@ -5,6 +5,8 @@ import {
   type PullProgressEvent,
   type SettingsResponse,
 } from "../lib/api";
+import { cancelSpeech, getAvailableVoices, speak } from "../lib/tts";
+import { useTtsSettings } from "../store/ttsStore";
 
 // Gear-icon dropdown that lets the user pick which brain Shadows runs on,
 // drop in an Anthropic key, swap models, and pull Ollama models on demand.
@@ -14,8 +16,11 @@ interface Props {
 }
 
 export function ShadowsSettingsMenu({ onSaved }: Props) {
+  const ttsSettings = useTtsSettings((s) => s.settings);
+  const patchTts = useTtsSettings((s) => s.patch);
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<SettingsResponse | null>(null);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [busy, setBusy] = useState(false);
   const [pulling, setPulling] = useState<{
     model: string;
@@ -33,6 +38,7 @@ export function ShadowsSettingsMenu({ onSaved }: Props) {
   useEffect(() => {
     if (open) {
       api.settings.get().then(setData).catch(() => setData(null));
+      getAvailableVoices().then(setVoices).catch(() => setVoices([]));
     }
   }, [open]);
 
@@ -366,10 +372,141 @@ export function ShadowsSettingsMenu({ onSaved }: Props) {
                   />
                 </div>
               </Section>
+
+              <Section label="Voice">
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-[11px] text-dsos-bone">
+                    <input
+                      type="checkbox"
+                      checked={ttsSettings.enabled}
+                      onChange={(e) =>
+                        patchTts({ enabled: e.currentTarget.checked })
+                      }
+                      className="accent-dsos-flame"
+                    />
+                    <span>Speak responses aloud</span>
+                  </label>
+
+                  {ttsSettings.enabled && (
+                    <div className="space-y-2">
+                      <div>
+                        <div className="text-[9px] mono uppercase tracking-wider text-dsos-ghost mb-0.5">
+                          Voice
+                        </div>
+                        <select
+                          value={ttsSettings.voiceURI ?? ""}
+                          onChange={(e) =>
+                            patchTts({
+                              voiceURI: e.currentTarget.value || null,
+                            })
+                          }
+                          className="w-full input-ember text-[11px]"
+                        >
+                          <option value="">Browser default</option>
+                          {preferredVoices(voices).map((voice) => (
+                            <option key={voice.voiceURI} value={voice.voiceURI}>
+                              {voice.name} ({voice.lang})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <RangeSetting
+                        label="Rate"
+                        value={ttsSettings.rate}
+                        min={0.5}
+                        max={2}
+                        step={0.1}
+                        onChange={(rate) => patchTts({ rate })}
+                      />
+                      <RangeSetting
+                        label="Pitch"
+                        value={ttsSettings.pitch}
+                        min={0}
+                        max={2}
+                        step={0.1}
+                        onChange={(pitch) => patchTts({ pitch })}
+                      />
+                      <div className="grid grid-cols-2 gap-1">
+                        <button
+                          onClick={() =>
+                            void speak(
+                              "Hey. Shadows voice is online.",
+                              ttsSettings
+                            )
+                          }
+                          className="btn-ember text-[11px] py-1"
+                        >
+                          Test voice
+                        </button>
+                        <button
+                          onClick={cancelSpeech}
+                          className="text-[11px] py-1 rounded border border-dsos-flame/25 bg-black/30 text-dsos-bone hover:border-dsos-flame/60"
+                        >
+                          Stop
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </Section>
             </div>
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+function preferredVoices(
+  voices: SpeechSynthesisVoice[]
+): SpeechSynthesisVoice[] {
+  const english = voices.filter((voice) =>
+    voice.lang.toLowerCase().startsWith("en")
+  );
+  const pool = english.length > 0 ? english : voices;
+  return [...pool].sort((a, b) => voicePreference(b) - voicePreference(a));
+}
+
+function voicePreference(voice: SpeechSynthesisVoice): number {
+  const name = voice.name.toLowerCase();
+  let score = 0;
+  if (name.includes("male")) score += 20;
+  if (!name.includes("female")) score += 5;
+  if (voice.default) score += 3;
+  return score;
+}
+
+function RangeSetting({
+  label,
+  value,
+  min,
+  max,
+  step,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  onChange: (value: number) => void;
+}) {
+  return (
+    <div>
+      <div className="flex justify-between text-[9px] mono uppercase tracking-wider text-dsos-ghost mb-0.5">
+        <span>{label}</span>
+        <span>{value.toFixed(1)}</span>
+      </div>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.currentTarget.value))}
+        className="w-full accent-dsos-flame"
+      />
     </div>
   );
 }

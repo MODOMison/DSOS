@@ -19,34 +19,34 @@ function greetingFor(hour: number, name?: string): string {
   const who = name ? `, ${name}` : "";
   if (hour >= 5 && hour < 12) {
     const pool = [
-      `Morning${who}. I'm Shadow — Matt's, technically, but I'm here for you. What are we working on?`,
-      `You're up early${who}. Good time to think clearly. I'm Shadow; where do you want to start?`,
-      `Morning${who}. Shadow here. Tell me what's in front of you and we'll take it apart.`,
+      `Morning${who}. I'm Matt's shadow — but I'm here for you. What are we working on?`,
+      `You're up early${who}. Good time to think clearly. Where do you want to start?`,
+      `Morning${who}. Tell me what's in front of you and we'll take it apart.`,
     ];
     return pool[Math.floor(Math.random() * pool.length)];
   }
   if (hour >= 12 && hour < 17) {
     const pool = [
-      `Hey${who}. Shadow here — Matt's, looking after you while you're in here. What's the situation?`,
-      `Afternoon${who}. I'm Shadow. What are you trying to get done?`,
-      `Back at it${who}? Good. I'm Shadow — walk me through it.`,
+      `Hey${who}. Matt's shadow — looking after you while you're in here. What's the situation?`,
+      `Afternoon${who}. What are you trying to get done?`,
+      `Back at it${who}? Good. Walk me through it.`,
     ];
     return pool[Math.floor(Math.random() * pool.length)];
   }
   if (hour >= 17 && hour < 22) {
     const pool = [
-      `Evening${who}. I'm Shadow — Matt built me to stand in for him in here. What are we working on?`,
-      `Hey${who}. Shadow here. Long day or just getting started?`,
-      `Evening${who}. I'm Shadow. Lay it out and we'll figure it out.`,
+      `Evening${who}. Matt built me to stand in for him in here. What are we working on?`,
+      `Hey${who}. Long day or just getting started?`,
+      `Evening${who}. Lay it out and we'll figure it out.`,
     ];
     return pool[Math.floor(Math.random() * pool.length)];
   }
   // late night
   const pool = [
-    `Up late${who}? I'm Shadow — Matt's, and I don't keep hours. What are we doing?`,
-    `Late one${who}. Shadow here. Clear head or running on fumes — either way, where do we start?`,
-    `Hey${who}. I'm Shadow. The quiet hours are good for the hard problems. What's on your mind?`,
-    `Still going${who}? Same. I'm Shadow — let's make it count.`,
+    `Up late${who}? I'm Matt's shadow, and I don't keep hours. What are we doing?`,
+    `Late one${who}. Clear head or running on fumes — either way, where do we start?`,
+    `Hey${who}. The quiet hours are good for the hard problems. What's on your mind?`,
+    `Still going${who}? Same. Let's make it count.`,
   ];
   return pool[Math.floor(Math.random() * pool.length)];
 }
@@ -160,10 +160,11 @@ export function ShadowsAI() {
                 c.setSpeaking(false);
                 c.markActivity();
               }
-              sentenceBuffer = speakCompletedSentences(
-                sentenceBuffer + e.delta,
-                ttsSettingsRef.current
-              );
+              // Accumulate the whole reply and speak it as a single utterance
+              // on "done". Chrome on Windows clips the leading words of
+              // back-to-back queued utterances, so speaking sentence-by-
+              // sentence reliably drops words.
+              sentenceBuffer += e.delta;
               break;
             case "done":
               speakRemainder(sentenceBuffer, ttsSettingsRef.current);
@@ -367,19 +368,6 @@ export function ShadowsAI() {
       </form>
     </div>
   );
-}
-
-function speakCompletedSentences(text: string, settings: TtsSettings): string {
-  let buffer = text;
-  const sentencePattern = /([\s\S]*?[.!?]+)(?=\s|$)|([\s\S]*?\n+)/;
-  let match = buffer.match(sentencePattern);
-  while (match?.index === 0) {
-    const sentence = (match[1] ?? match[2] ?? "").trim();
-    if (sentence) void speak(sentence, settings);
-    buffer = buffer.slice(match[0].length);
-    match = buffer.match(sentencePattern);
-  }
-  return buffer;
 }
 
 function speakRemainder(text: string, settings: TtsSettings) {

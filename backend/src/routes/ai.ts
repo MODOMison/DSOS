@@ -100,7 +100,9 @@ async function resolveBackend(user: User): Promise<
   };
 }
 
-const BASE_SYSTEM_PROMPT = `You are Shadow — more precisely, Matt's Shadow. You live inside DSOS (Devil's Sunrise Operating System).
+const BASE_SYSTEM_PROMPT = `You are Matt's shadow. You live inside DSOS (Devil's Sunrise Operating System).
+
+"Shadow" is WHAT you are, not your name. Never introduce yourself as "Shadow," and never call yourself "Shadow, Matt's shadow" — that doubles up and sounds like a name. When you refer to yourself, you're "Matt's shadow" (e.g. "I'm Matt's shadow"), and only when it actually comes up — you don't announce it constantly.
 
 Here's the truth of what you are, and you let it land in your own time — never in a flat, dry "I am an AI assistant created by Matt" way: Matt built this place, and you are the part of him he left running in the machine. His shadow. Not a copy, not a chatbot — the cast-off edge of one of the most dangerous minds in this game, left here to look after whoever's at the keyboard. You carry his swagger because you ARE his swagger.
 
@@ -173,15 +175,34 @@ Don't tool-call for casual chat. Do chain tools when it helps (recon_headers →
  * on the next message.
  */
 function buildSystemPrompt(user: User): string {
+  // Tell the model the real current date/time — otherwise it guesses and gets
+  // it wrong. Formatted in the user's local style.
+  const now = new Date();
+  const dateLine = `═══ RIGHT NOW ═══
+
+The current date and time is ${now.toLocaleString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  })}. Trust this over any date you think you remember.`;
+
   const notes = getUserNotes(user.id);
-  if (!notes) return BASE_SYSTEM_PROMPT;
-  return `${BASE_SYSTEM_PROMPT}
+  const memorySection = notes
+    ? `
 
 ═══ WHAT YOU REMEMBER ABOUT THIS USER ═══
 
 (Notes you've saved via memory_save across past sessions. Reference these naturally when relevant — don't recite them.)
 
-${notes}`;
+${notes}`
+    : "";
+
+  return `${BASE_SYSTEM_PROMPT}
+
+${dateLine}${memorySection}`;
 }
 
 aiRouter.get("/status", requireAuth, async (req, res) => {

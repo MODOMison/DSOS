@@ -42,6 +42,16 @@ export function ShadowsSettingsMenu({ onSaved }: Props) {
     }
   }, [open]);
 
+  // Close on Escape while the panel is open.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
   // Click-outside to close.
   useEffect(() => {
     if (!open) return;
@@ -106,7 +116,15 @@ export function ShadowsSettingsMenu({ onSaved }: Props) {
 
       {open && (
         <div
-          className="absolute right-0 top-full mt-2 w-80 rounded-lg overflow-hidden shadow-2xl z-50 text-xs"
+          className="fixed inset-0 z-50 flex justify-end"
+          style={{ background: "rgba(4,2,3,0.55)" }}
+          onMouseDown={(e) => {
+            // Click on the dim backdrop (not the panel) closes.
+            if (e.target === e.currentTarget) setOpen(false);
+          }}
+        >
+        <div
+          className="absolute right-3 top-3 bottom-3 w-80 max-w-[calc(100vw-1.5rem)] rounded-lg overflow-hidden shadow-2xl text-xs flex flex-col"
           style={{
             background:
               "linear-gradient(180deg, rgba(36,16,19,0.97), rgba(18,7,9,0.97))",
@@ -116,7 +134,7 @@ export function ShadowsSettingsMenu({ onSaved }: Props) {
               "0 12px 50px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,184,106,0.18)",
           }}
         >
-          <div className="px-3 py-2 border-b border-dsos-flame/25 flex items-center justify-between">
+          <div className="shrink-0 px-3 py-2 border-b border-dsos-flame/25 flex items-center justify-between">
             <span className="script text-dsos-glow text-glow text-base">
               Shadows
             </span>
@@ -132,7 +150,7 @@ export function ShadowsSettingsMenu({ onSaved }: Props) {
           )}
 
           {data && (
-            <div className="p-3 space-y-3 max-h-[70vh] overflow-y-auto dsos-scrollbar">
+            <div className="p-3 space-y-3 flex-1 min-h-0 overflow-y-auto dsos-scrollbar">
               {/* ---- Backend selector ---- */}
               <Section label="Brain">
                 <div className="grid grid-cols-5 gap-1">
@@ -452,6 +470,7 @@ export function ShadowsSettingsMenu({ onSaved }: Props) {
               </Section>
             </div>
           )}
+        </div>
         </div>
       )}
     </div>

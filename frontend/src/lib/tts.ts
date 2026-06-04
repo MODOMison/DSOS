@@ -29,6 +29,24 @@ let pendingCount = 0;
 let generation = 0;
 let mouthOpen = false;
 let speaking = false;
+let keepAlive: number | null = null;
+
+// Chrome on Windows stalls queued/long synthesis after ~15s and sometimes
+// pauses mid-utterance; pumping resume() on an interval keeps it talking.
+function startKeepAlive() {
+  if (keepAlive !== null || typeof window === "undefined") return;
+  keepAlive = window.setInterval(() => {
+    const s = synth();
+    if (s?.speaking) s.resume();
+  }, 5000);
+}
+
+function stopKeepAlive() {
+  if (keepAlive !== null) {
+    window.clearInterval(keepAlive);
+    keepAlive = null;
+  }
+}
 
 function synth(): SpeechSynthesis | null {
   return typeof window !== "undefined" && "speechSynthesis" in window
@@ -111,7 +129,16 @@ function runUtterance(
 
     utterance.onend = finish;
     utterance.onerror = finish;
-    speech.speak(utterance);
+    // A short gap before speaking avoids Chrome's bug of clipping the first
+    // word(s) of an utterance queued immediately after the previous one ends.
+    window.setTimeout(() => {
+      if (utteranceGeneration !== generation) {
+        finish();
+        return;
+      }
+      speech.resume();
+      speech.speak(utterance);
+    }, 90);
   });
 }
 
@@ -122,6 +149,7 @@ export function speak(text: string, settings: TtsSettings): Promise<void> {
   const utteranceGeneration = generation;
   pendingCount += 1;
   setSpeaking(true);
+  startKeepAlive();
 
   const job = queue
     .catch(() => undefined)
@@ -132,6 +160,7 @@ export function speak(text: string, settings: TtsSettings): Promise<void> {
     .finally(() => {
       pendingCount = Math.max(0, pendingCount - 1);
       if (pendingCount === 0) {
+        stopKeepAlive();
         emitMouthAmplitude(0);
         setSpeaking(false);
       }
@@ -146,6 +175,7 @@ export function cancelSpeech(): void {
   pendingCount = 0;
   queue = Promise.resolve();
   mouthOpen = false;
+  stopKeepAlive();
   synth()?.cancel();
   emitMouthAmplitude(0);
   setSpeaking(false);

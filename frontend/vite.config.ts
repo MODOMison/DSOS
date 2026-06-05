@@ -12,4 +12,9 @@ export default defineConfig({
       },
     },
   },
+  // vits-web dynamically imports onnxruntime-web and loads its wasm from a CDN.
+  // Let Vite serve them as-is instead of pre-bundling the wasm runtime.
+  optimizeDeps: {
+    exclude: ["@diffusionstudio/vits-web", "onnxruntime-web"],
+  },
 });

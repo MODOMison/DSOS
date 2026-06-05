@@ -4,6 +4,12 @@ An AI + cybersecurity workbench dressed as a fake operating system. Boot screen,
 draggable desktop windows, devil-sunrise aesthetic — every window is a real,
 working tool.
 
+> ### 🔥 Checkpoint: **v4.0.0 — "Neural Voice"** &nbsp;·&nbsp; _more to come_
+> The current stable checkpoint. Shadow now speaks with **in-browser Piper
+> neural TTS** — real synthesized audio, no more first-word clipping from the OS
+> speech engine, plus a deeper/menacing voice and waveform-driven lip-sync.
+> Active development continues past this tag.
+
 > ⚠ **Authorized targets only.** Run these tools against systems you own or are
 > explicitly authorized to test. Practice on lab targets:
 > [PortSwigger Academy](https://portswigger.net/web-security),

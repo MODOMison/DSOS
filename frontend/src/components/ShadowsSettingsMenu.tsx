@@ -5,7 +5,13 @@ import {
   type PullProgressEvent,
   type SettingsResponse,
 } from "../lib/api";
-import { cancelSpeech, getAvailableVoices, speak } from "../lib/tts";
+import {
+  cancelSpeech,
+  getAvailableVoices,
+  PIPER_VOICES,
+  prepareVoice,
+  speak,
+} from "../lib/tts";
 import { useTtsSettings } from "../store/ttsStore";
 
 // Gear-icon dropdown that lets the user pick which brain Shadows runs on,
@@ -28,6 +34,7 @@ export function ShadowsSettingsMenu({ onSaved }: Props) {
     status: string;
   } | null>(null);
   const [keyDraft, setKeyDraft] = useState("");
+  const [voiceBusy, setVoiceBusy] = useState(false);
   const [installingBuiltin, setInstallingBuiltin] = useState<{
     log: string[];
     status: "running" | "done" | "error";
@@ -409,24 +416,84 @@ export function ShadowsSettingsMenu({ onSaved }: Props) {
                     <div className="space-y-2">
                       <div>
                         <div className="text-[9px] mono uppercase tracking-wider text-dsos-ghost mb-0.5">
+                          Engine
+                        </div>
+                        <div className="grid grid-cols-2 gap-1">
+                          {(
+                            [
+                              { id: "piper", label: "Neural (Piper)" },
+                              { id: "browser", label: "Browser" },
+                            ] as const
+                          ).map((opt) => (
+                            <button
+                              key={opt.id}
+                              onClick={() => {
+                                cancelSpeech();
+                                patchTts({ engine: opt.id });
+                              }}
+                              className={`text-[10px] py-1 rounded border transition-all ${
+                                ttsSettings.engine === opt.id
+                                  ? "border-dsos-flame bg-dsos-flame/20 text-dsos-glow"
+                                  : "border-dsos-flame/25 bg-black/30 text-dsos-bone hover:border-dsos-flame/60"
+                              }`}
+                              title={
+                                opt.id === "piper"
+                                  ? "Neural TTS synthesized in-browser. Best quality, no first-word clipping. Downloads a small voice model on first use."
+                                  : "OS speech engine. No download, but clips the first word on some Windows setups."
+                              }
+                            >
+                              {opt.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="text-[9px] mono uppercase tracking-wider text-dsos-ghost mb-0.5">
                           Voice
                         </div>
-                        <select
-                          value={ttsSettings.voiceURI ?? ""}
-                          onChange={(e) =>
-                            patchTts({
-                              voiceURI: e.currentTarget.value || null,
-                            })
-                          }
-                          className="w-full input-ember text-[11px]"
-                        >
-                          <option value="">Browser default</option>
-                          {preferredVoices(voices).map((voice) => (
-                            <option key={voice.voiceURI} value={voice.voiceURI}>
-                              {voice.name} ({voice.lang})
-                            </option>
-                          ))}
-                        </select>
+                        {ttsSettings.engine === "piper" ? (
+                          <select
+                            value={ttsSettings.piperVoiceId}
+                            onChange={(e) => {
+                              cancelSpeech();
+                              patchTts({ piperVoiceId: e.currentTarget.value });
+                            }}
+                            className="w-full input-ember text-[11px]"
+                          >
+                            {PIPER_VOICES.map((v) => (
+                              <option key={v.id} value={v.id}>
+                                {v.label}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <select
+                            value={ttsSettings.voiceURI ?? ""}
+                            onChange={(e) =>
+                              patchTts({
+                                voiceURI: e.currentTarget.value || null,
+                              })
+                            }
+                            className="w-full input-ember text-[11px]"
+                          >
+                            <option value="">Browser default</option>
+                            {preferredVoices(voices).map((voice) => (
+                              <option
+                                key={voice.voiceURI}
+                                value={voice.voiceURI}
+                              >
+                                {voice.name} ({voice.lang})
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                        {ttsSettings.engine === "piper" && (
+                          <p className="text-[9px] text-dsos-ghost mt-1 leading-snug">
+                            First use of a voice downloads a small model
+                            (~20–60 MB), then it's cached offline.
+                          </p>
+                        )}
                       </div>
 
                       <RangeSetting
@@ -447,15 +514,22 @@ export function ShadowsSettingsMenu({ onSaved }: Props) {
                       />
                       <div className="grid grid-cols-2 gap-1">
                         <button
-                          onClick={() =>
-                            void speak(
-                              "Hey. Shadows voice is online.",
-                              ttsSettings
-                            )
-                          }
-                          className="btn-ember text-[11px] py-1"
+                          onClick={async () => {
+                            setVoiceBusy(true);
+                            try {
+                              await prepareVoice(ttsSettings);
+                              await speak(
+                                "Shadow online. I am the most dangerous thing in this machine.",
+                                ttsSettings
+                              );
+                            } finally {
+                              setVoiceBusy(false);
+                            }
+                          }}
+                          disabled={voiceBusy}
+                          className="btn-ember text-[11px] py-1 disabled:opacity-60"
                         >
-                          Test voice
+                          {voiceBusy ? "Loading…" : "Test voice"}
                         </button>
                         <button
                           onClick={cancelSpeech}

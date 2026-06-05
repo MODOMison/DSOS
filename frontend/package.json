@@ -1,7 +1,7 @@
 {
   "name": "dsos-frontend",
   "private": true,
-  "version": "0.3.0",
+  "version": "4.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@diffusionstudio/vits-web": "^1.0.3",
     "@pixiv/three-vrm": "^3.5.2",
     "@react-three/fiber": "^8.18.0",
     "dsos": "file:..",

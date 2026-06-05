@@ -7,7 +7,10 @@ import {
   isSpeechSupported,
   isTtsSpeaking,
   onSpeakingChange,
-  speak,
+  prepareVoice,
+  speakWarm,
+  startWarmup,
+  stopWarmup,
   type TtsSettings,
 } from "../lib/tts";
 import { useCharacter } from "../store/characterStore";
@@ -112,6 +115,17 @@ export function ShadowsAI() {
   async function send() {
     if (!input.trim() || sending || !status?.available) return;
     cancelSpeech();
+    // Get the voice ready while the model generates. Piper: download/cache the
+    // neural model (and resume the AudioContext within this click gesture).
+    // Browser: keep the SAPI engine warm so the reply's first word isn't eaten
+    // by cold-start latency.
+    if (ttsSettingsRef.current.enabled) {
+      if (ttsSettingsRef.current.engine === "piper") {
+        void prepareVoice(ttsSettingsRef.current);
+      } else if (isSpeechSupported()) {
+        startWarmup(ttsSettingsRef.current);
+      }
+    }
     let sentenceBuffer = "";
     const userTurn: Turn = { kind: "user", text: input.trim() };
     const assistantTurn: Turn = {
@@ -172,6 +186,7 @@ export function ShadowsAI() {
               c.onResponseDone(isTtsSpeaking());
               break;
             case "error":
+              stopWarmup();
               sentenceBuffer = "";
               c.onError();
               break;
@@ -372,7 +387,10 @@ export function ShadowsAI() {
 
 function speakRemainder(text: string, settings: TtsSettings) {
   const trimmed = text.trim();
-  if (trimmed) void speak(trimmed, settings);
+  // speakWarm stops the warm-up pump, flushes the in-flight silent utterance,
+  // then speaks after a short gap so the engine is warm-but-idle (no cold-start
+  // clip, no back-to-back clip).
+  if (trimmed) speakWarm(trimmed, settings);
 }
 
 interface ShadowsStatus {

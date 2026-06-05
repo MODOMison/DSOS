@@ -1,6 +1,6 @@
 {
   "name": "dsos",
-  "version": "0.3.0",
+  "version": "4.0.0",
   "private": true,
   "description": "Devil's Sunrise Operating System — an AI + cybersecurity workbench themed as a fake OS",
   "main": "electron/main.cjs",

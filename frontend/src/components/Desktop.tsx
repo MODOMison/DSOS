@@ -19,6 +19,7 @@ import { Account } from "../apps/Account";
 import { CipherCellar } from "../apps/CipherCellar";
 import { SealBreaker } from "../apps/SealBreaker";
 import { SigilReader } from "../apps/SigilReader";
+import { WhisperReader } from "../apps/WhisperReader";
 import { Animator } from "../apps/Animator";
 
 const renderers: Record<AppId, () => ReactNode> = {
@@ -35,12 +36,20 @@ const renderers: Record<AppId, () => ReactNode> = {
   cipher: () => <CipherCellar />,
   seal: () => <SealBreaker />,
   sigil: () => <SigilReader />,
+  whisper: () => <WhisperReader />,
   animator: () => <Animator />,
 };
 
 export function Desktop() {
   const { windows, restoreOrFocus } = useWindowStore();
   const [petHidden, setPetHidden] = useState(false);
+
+  // In Electron the always-on-top floating Shadow IS the avatar, so the
+  // embedded desktop pet below would be a second, duplicate avatar. Render the
+  // embedded pet only in the browser, where no floating OS window exists.
+  const isElectron = !!(
+    window as unknown as { dsos?: { isElectron?: boolean } }
+  ).dsos?.isElectron;
 
   const desktopIcons: { appId: AppId; glyph: string; label: string }[] = [
     { appId: "recon", glyph: "🜨", label: "Inferno Recon" },
@@ -53,6 +62,7 @@ export function Desktop() {
     { appId: "cipher", glyph: "⛧", label: "Cipher Cellar" },
     { appId: "seal", glyph: "⛓", label: "Seal Breaker" },
     { appId: "sigil", glyph: "⌬", label: "Sigil Reader" },
+    { appId: "whisper", glyph: "👁", label: "Whisper Reader" },
     { appId: "animator", glyph: "🎭", label: "Animator" },
     { appId: "account", glyph: "⚲", label: "Account" },
     { appId: "pricing", glyph: "$", label: "Pricing" },
@@ -106,8 +116,9 @@ export function Desktop() {
       {/* Shadows desktop pet — VRM avatar pinned to the bottom-right.
           Clicking her body opens the Shadows chat window. The two control
           buttons in the top-right corner of the pet handle expand/banish
-          without triggering the chat click. */}
-      {!petHidden && (
+          without triggering the chat click. Browser-only — Electron uses the
+          floating companion window instead. */}
+      {!isElectron && !petHidden && (
         <div
           className="absolute right-4 bottom-20 z-0"
           style={{ width: 320, height: 440 }}
@@ -164,7 +175,7 @@ export function Desktop() {
         </div>
       )}
 
-      {petHidden && (
+      {!isElectron && petHidden && (
         <button
           onClick={() => setPetHidden(false)}
           className="absolute right-4 bottom-20 z-0 text-[10px] mono px-3 py-1 rounded border border-dsos-flame/40 bg-black/60 text-dsos-bone hover:text-dsos-flame backdrop-blur"

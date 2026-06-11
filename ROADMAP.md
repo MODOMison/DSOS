@@ -80,7 +80,9 @@ Tier legend: 🆓 free · ⭐ Pro · 🏆 Pro+ (future team tier)
 
 18. **⭐ Whisper Reader** — log analyzer. Paste server/auth logs, AI flags suspicious patterns,
     groups by attacker, generates IOCs.
-    Effort: M · *Why pay:* SOC analyst superpower.
+    Effort: M · *Why pay:* SOC analyst superpower. **(BUILT)** — deterministic in-browser engine
+    (Apache/Nginx access + sshd/auth parsing, per-source threat scoring, IOC export to txt/json)
+    with an optional, graceful AI incident summary.
 
 19. **🆓 CTF Shadows** — paste a CTF challenge description, AI gives progressively bigger hints
     (level 1 nudge → level 3 walkthrough) so people don't get full spoilers.

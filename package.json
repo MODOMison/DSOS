@@ -1,6 +1,6 @@
 {
   "name": "dsos",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "private": true,
   "description": "Devil's Sunrise Operating System — an AI + cybersecurity workbench themed as a fake OS",
   "main": "electron/main.cjs",
@@ -100,5 +100,8 @@
       "perMachine": false,
       "allowToChangeInstallationDirectory": true
     }
+  },
+  "dependencies": {
+    "node-window-manager": "^2.2.4"
   }
 }

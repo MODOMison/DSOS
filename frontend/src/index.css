@@ -26,6 +26,25 @@ body.companion-mode,
   overflow: hidden;
 }
 
+/* Poke-reaction bubble + emote — quick bounce-in so it feels alive. */
+@keyframes reaction-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.7);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.reaction-pop {
+  animation: reaction-pop 0.26s cubic-bezier(0.22, 1.2, 0.4, 1) both;
+}
+
 body {
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;

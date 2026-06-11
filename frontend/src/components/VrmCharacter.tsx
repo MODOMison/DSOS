@@ -1,4 +1,4 @@
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
@@ -14,6 +14,7 @@ import {
   useCharacter,
   type Mood,
   type Pose,
+  type PokeRegion,
 } from "../store/characterStore";
 import {
   animationUrl,
@@ -23,6 +24,7 @@ import {
 } from "../lib/bvhLoader";
 import { loadFbxClip } from "../lib/fbxLoader";
 import { isTtsSpeaking, onMouthAmplitude } from "../lib/tts";
+import { beginCharacterGrab } from "../lib/companionControl";
 
 // Pose-specific body data is no longer driven procedurally — BVH clips
 // take over once they load. See store/characterStore.ts for idleClipForPose
@@ -161,6 +163,26 @@ function Character({ url, mouthOpenRef, expressionRef }: CharacterProps) {
   const blinkingRef = useRef(false);
   const blinkStartRef = useRef(0);
   const smoothMouthRef = useRef(0);
+  const lastPokeRef = useRef(0);
+
+  // Press on the body → either a grab-drag (companion window) or, if it was a
+  // tap with no travel, a poke. We classify head/body/legs from the world-space
+  // hit point's height (feet ≈ 0, crown ≈ 1.55) up front, then hand the native
+  // pointer event to companionControl, which decides drag vs. poke. In the
+  // browser / main-desktop backdrop it always falls through to the poke.
+  function handlePress(e: ThreeEvent<PointerEvent>) {
+    e.stopPropagation();
+    const y = e.point.y;
+    const region: PokeRegion = y > 1.2 ? "head" : y < 0.6 ? "legs" : "body";
+    beginCharacterGrab(e.nativeEvent, {
+      onPoke: () => {
+        const now = performance.now();
+        if (now - lastPokeRef.current < 200) return; // debounce double-fire
+        lastPokeRef.current = now;
+        useCharacter.getState().pokeReaction(region);
+      },
+    });
+  }
 
   // Mirror the Zustand store into a ref so useFrame can read without
   // re-rendering the Canvas tree every state change.
@@ -451,6 +473,7 @@ function Character({ url, mouthOpenRef, expressionRef }: CharacterProps) {
       sad: VRMExpressionPresetName.Sad,
       surprised: VRMExpressionPresetName.Surprised,
       laughing: VRMExpressionPresetName.Happy,
+      annoyed: VRMExpressionPresetName.Angry,
     };
     const moodIntensity: Record<Mood, number> = {
       idle: 0,
@@ -459,6 +482,7 @@ function Character({ url, mouthOpenRef, expressionRef }: CharacterProps) {
       sad: 0.8,
       surprised: 0.95,
       laughing: 1.0,
+      annoyed: 0.85,
     };
     const forcedExpr = expressionRef?.current ?? null;
     const allExprs: VRMExpressionPresetName[] = [
@@ -480,7 +504,19 @@ function Character({ url, mouthOpenRef, expressionRef }: CharacterProps) {
   });
 
   if (!vrm) return null;
-  return <primitive object={vrm.scene} />;
+  return (
+    <primitive
+      object={vrm.scene}
+      onPointerDown={handlePress}
+      onPointerOver={(e: ThreeEvent<PointerEvent>) => {
+        e.stopPropagation();
+        document.body.style.cursor = "grab";
+      }}
+      onPointerOut={() => {
+        document.body.style.cursor = "";
+      }}
+    />
+  );
 }
 
 // Stable string id for an ActiveClip so subscribe transitions can be
@@ -543,19 +579,20 @@ export function VrmCharacter({
   return (
     <div className="absolute inset-0">
       <Canvas
-        camera={{ position: [0, 0.95, 3.0], fov: 30 }}
+        camera={{ position: [0, 0.9, 3.45], fov: 30 }}
         gl={{ alpha: true, antialias: true }}
         dpr={[1, 2]}
         style={{ background: "transparent" }}
       >
         <CameraRig
-          // Full-body framing — looking slightly up from chest level, far
-          // enough back to fit head + feet with margin. Tune pz to zoom.
+          // Full-body framing — far enough back and aimed low enough that the
+          // feet (y≈0) keep clear margin above the window's bottom edge instead
+          // of being clipped. Tune pz to zoom, ly to shift the framing.
           px={0}
-          py={0.95}
-          pz={3.0}
+          py={0.9}
+          pz={3.45}
           lx={0}
-          ly={0.85}
+          ly={0.78}
           lz={0}
         />
         {/* 3-point-ish lighting: neutral ambient + warm key + cool fill + a

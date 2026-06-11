@@ -30,6 +30,7 @@ const appGlyphs: Record<AppId, string> = {
   cipher: "⛧",
   seal: "⛓",
   sigil: "⌬",
+  whisper: "👁",
   animator: "🎭",
 };
 

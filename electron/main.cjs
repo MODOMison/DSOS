@@ -315,6 +315,15 @@ function createMainWindow(url) {
     backgroundColor: "#0a0506",
     title: "DSOS",
     autoHideMenuBar: true,
+    // No white OS title bar (DSOS is its own desktop environment), but KEEP the
+    // native min/max/close buttons via a dark themed overlay so the window can
+    // still be minimized/restored.
+    titleBarStyle: "hidden",
+    titleBarOverlay: {
+      color: "#0a0506",
+      symbolColor: "#ffb86a",
+      height: 34,
+    },
     webPreferences: {
       preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true,
@@ -322,6 +331,12 @@ function createMainWindow(url) {
     },
   });
   mainWin.loadURL(url);
+  // Don't let the page's long <title> matter — there's no title bar now, but
+  // this keeps the taskbar label clean as "DSOS".
+  mainWin.on("page-title-updated", (e) => {
+    e.preventDefault();
+    if (mainWin && !mainWin.isDestroyed()) mainWin.setTitle("DSOS");
+  });
   mainWin.on("closed", () => {
     mainWin = null;
   });
@@ -414,6 +429,75 @@ ipcMain.handle("dsos:show-companion", () => {
     createCompanionWindow(baseUrl);
   }
   companionWin?.show();
+});
+
+// --- Companion window control: drag / throw / scroll-resize / edge-snap ---
+// The renderer owns the interaction logic (pointer math, inertia, snap); the
+// main process just applies the resulting geometry to the actual window.
+ipcMain.handle("dsos:companion-get-bounds", () =>
+  companionWin ? companionWin.getBounds() : null
+);
+ipcMain.handle("dsos:companion-set-pos", (_e, x, y) => {
+  if (companionWin) companionWin.setPosition(Math.round(x), Math.round(y));
+});
+ipcMain.handle("dsos:companion-set-size", (_e, w, h) => {
+  if (!companionWin) return;
+  // Grow from the horizontal centre and keep the feet (bottom edge) anchored,
+  // so scaling the Shadow feels like he's planted where you left him rather
+  // than jumping to a new corner.
+  const b = companionWin.getBounds();
+  const cx = b.x + b.width / 2;
+  const bottom = b.y + b.height;
+  companionWin.setBounds({
+    width: Math.round(w),
+    height: Math.round(h),
+    x: Math.round(cx - w / 2),
+    y: Math.round(bottom - h),
+  });
+});
+ipcMain.handle("dsos:companion-get-workarea", () => {
+  const disp = companionWin
+    ? screen.getDisplayMatching(companionWin.getBounds())
+    : screen.getPrimaryDisplay();
+  return disp.workArea; // { x, y, width, height } — excludes the taskbar
+});
+
+// --- App-awareness relay: main desktop renderer → companion renderer. ---
+ipcMain.handle("dsos:app-open", (_e, appId, title) => {
+  if (companionWin && !companionWin.isDestroyed()) {
+    companionWin.webContents.send("dsos:app-event", {
+      type: "app-open",
+      appId,
+      title,
+    });
+  }
+});
+
+// --- Panel riding: the desktop reports the focused window's rect in its own
+// content coordinates; translate to absolute screen coordinates using the main
+// window's content origin, then hand it to the companion so the Shadow can
+// perch on the actual on-screen panel. ---
+ipcMain.on("dsos:panel", (_e, rect) => {
+  if (!companionWin || companionWin.isDestroyed()) return;
+  if (!mainWin || mainWin.isDestroyed()) return;
+  let screenRect = null;
+  if (rect) {
+    const cb = mainWin.getContentBounds(); // content origin in screen coords
+    screenRect = {
+      x: cb.x + rect.x,
+      y: cb.y + rect.y,
+      w: rect.w,
+      h: rect.h,
+      appId: rect.appId,
+      title: rect.title,
+    };
+  }
+  companionWin.webContents.send("dsos:panel-screen", screenRect);
+});
+
+// Temporary diagnostics from the renderer → terminal log.
+ipcMain.on("dsos:debug", (_e, msg) => {
+  console.log("[companion]", msg);
 });
 
 app.on("will-quit", () => {

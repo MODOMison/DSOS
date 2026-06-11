@@ -15,6 +15,7 @@ export type AppId =
   | "cipher"
   | "seal"
   | "sigil"
+  | "whisper"
   | "animator";
 
 export interface WindowState {
@@ -58,6 +59,7 @@ const titles: Record<AppId, string> = {
   cipher: "Cipher Cellar",
   seal: "Seal Breaker",
   sigil: "Sigil Reader",
+  whisper: "Whisper Reader",
   animator: "Animator",
 };
 
@@ -75,11 +77,55 @@ const defaultSize: Record<AppId, { w: number; h: number }> = {
   cipher: { w: 640, h: 560 },
   seal: { w: 760, h: 680 },
   sigil: { w: 700, h: 720 },
+  whisper: { w: 900, h: 700 },
   animator: { w: 540, h: 680 },
 };
 
 let idCounter = 0;
 const nextId = () => `w${++idCounter}`;
+
+// Report the focused (top-most, non-minimized) window to the Shadow companion
+// so it can perch on the active panel. Runs only in the main desktop window
+// (never the companion, whose window list is empty) and no-ops in the browser.
+function pushFocusedPanel(windows: WindowState[]) {
+  if (
+    typeof window === "undefined" ||
+    new URLSearchParams(window.location.search).get("mode") === "companion"
+  ) {
+    return;
+  }
+  const w = window as unknown as {
+    dsos?: {
+      reportPanel?: (
+        rect: {
+          x: number;
+          y: number;
+          w: number;
+          h: number;
+          appId: string;
+          title: string;
+        } | null
+      ) => void;
+      debug?: (m: string) => void;
+    };
+  };
+  if (!w.dsos?.reportPanel) return;
+  const open = windows.filter((x) => !x.minimized);
+  w.dsos.debug?.(`reportPanel: ${open.length} open window(s)`);
+  if (open.length === 0) {
+    w.dsos.reportPanel(null);
+    return;
+  }
+  const top = open.reduce((a, b) => (b.z > a.z ? b : a));
+  w.dsos.reportPanel({
+    x: top.x,
+    y: top.y,
+    w: top.w,
+    h: top.h,
+    appId: top.appId,
+    title: top.title,
+  });
+}
 
 export const useWindowStore = create<WindowStore>((set, get) => ({
   windows: [],
@@ -112,6 +158,16 @@ export const useWindowStore = create<WindowStore>((set, get) => ({
       ],
       topZ: z,
     }));
+    // Tell the Shadow companion what just opened so it can react in-character.
+    // No-op outside Electron (browser) or when the companion isn't running.
+    try {
+      const w = window as unknown as {
+        dsos?: { notifyAppOpen?: (appId: string, title?: string) => void };
+      };
+      w.dsos?.notifyAppOpen?.(appId, opts?.title ?? titles[appId]);
+    } catch {
+      /* bridge missing — fine, reactions are best-effort */
+    }
     return id;
   },
   close: (id) =>
@@ -176,6 +232,10 @@ export const useWindowStore = create<WindowStore>((set, get) => ({
     return get().open(appId);
   },
 }));
+
+// Keep the Shadow companion informed of the focused panel on every change
+// (open / focus / move / resize / minimize / close) so it can ride it.
+useWindowStore.subscribe((state) => pushFocusedPanel(state.windows));
 
 export const APP_TITLES = titles;
 
